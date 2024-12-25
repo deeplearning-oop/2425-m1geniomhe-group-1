@@ -1,3 +1,6 @@
+from enum import Enum #for dtype
+
+
 #################################################################################
 # --------------- helper functions to validate input data ---------------
 # --------------- will add this to a utils or helper.py file and import it ---------------
@@ -129,21 +132,66 @@ def infer_dimensions(nested_list):
     #if not a list (a scalar), no dimensions, need to return a list of length 0 in order to check for at the next base case
     return [] 
 
+#################################################################################
 
-    
+class dtype(Enum):
+    int64 = "int64"
+    float64 = "float64"
 
+    def __repr__(self):
+        return self.value
+
+    def __call__(self, x):
+        '''make if callable, uses:
+        ```
+        >>> dtype.int64(1.7)
+        1
+        >>> dtype.float64(1)
+        1.0
+        '''
+        if self == dtype.int64:
+            return int(x)
+        elif self == dtype.float64:
+            return float(x)
+        else:
+            print(f"Unknown dtype: {self}")
+
+# -- aliasing
+int64 = dtype.int64
+float64 = dtype.float64
 
 class Tensor:
-    def __init__(self, data, requires_grad=False, is_leaf=True):
-        self.data = data
-        self.requires_grad = requires_grad
-        self.is_leaf = is_leaf
-        self.dim = None
+    def __init__(self, data, dtype=float64, requires_grad=False, is_leaf=True):
+        self.__data = data
+        self.__dtype = dtype
+        self.__requires_grad = requires_grad
+        self.__is_leaf = is_leaf
+        self.__dim = None #this will be set in the __setattr__ method
+        
 
-    def __setattr__(self, name, value):
-        if name == 'data':
-            self.dim = self.validate_tensor_input(value)
-        super().__setattr__(name, value)
+    # ----- validating attributes -----
+
+    def validate_dtype(dt):
+        '''
+        ### parameters
+        - dt: str  
+        ### returns  
+        - dtype object
+        check if dtype is within the dtype enumerate
+
+        ```
+        >>> validate_dtype('int64')
+        >>> validate_dtype('int32')
+        ValueError: Invalid dtype given: int32; Valid dtypes are from ['int64', 'float64'] #so far, under development
+        ```
+        '''
+        try:
+            if dt not in dtype.__members__.keys():
+                raise ValueError(f"Invalid dtype given: {dtype}; Valid dtypes are from {list(dtype.__members__.keys())}")
+            return dtype.__members__[dt]
+        except ValueError as e:
+            print(f"ValueError: {e}")
+            return None
 
     def validate_tensor_input(input_data):
         '''
@@ -160,10 +208,10 @@ class Tensor:
         1. if the input is a  non-empty list (could be nested) (or numeric): raise ValueError if not -> check_dlist(input_data)    
         2. dimensions of the list (uniformity): raise valueError if not uniform -> infer_dimensions(input_data)  
 
-        in 1 we are checking for (when non numeric):  \ 
-        a. top level is a list   \   
-        b. non-empty list (nor containing empty lists)     \  
-        c. lowest level is numeric    
+        in 1 we are checking for (when non numeric):   
+        * a. top level is a list      
+        * b. non-empty list (nor containing empty lists)       
+        * c. lowest level is numeric    
         '''
         try:
             check_dlist(input_data)
@@ -171,3 +219,28 @@ class Tensor:
             return dimensions #or maybe just assign them in the class
         except ValueError as e:
             print("ValueError: inputData", e)
+    
+    def cast_dtype(self):
+        '''
+        recursively cast the elements of a nested list to a given dtype (default is float64)
+
+        e.g. the function outside the class would be: 
+        
+        ```
+        >>> cast_dtype([1,2,3])
+        [1.0, 2.0, 3.0]
+        >>> cast_dtype([1,2,3], dtype.int64)
+        [1, 2, 3]
+        ```
+        '''
+        if isinstance(self.data, list):
+            return [self.cast_dtype(sublist, self.dtype) for sublist in self.data]
+        return self.dtype(self.data)
+    
+    def __setattr__(self, name, value):
+        if name == 'dtype':
+            self.dtype = self.validate_dtype(value)
+        if name == 'data':
+            self.dim = self.validate_tensor_input(value)
+            self.data= self.cast_dtype()
+        super().__setattr__(name, value)
