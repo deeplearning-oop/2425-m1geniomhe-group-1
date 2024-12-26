@@ -191,14 +191,30 @@ class Tensor:
         return self.__requires_grad
     @requires_grad.setter
     def requires_grad(self, value):
+        try:
+            if not isinstance(value, bool):
+                raise ValueError("requires_grad must be a boolean")
+        except ValueError as e:
+            print(f"ValueError: requires_grad.setter, {e}")
         self.__requires_grad = value
+    @requires_grad.deleter
+    def requires_grad(self): #deletes requires_grad by setting it to default
+        self.__requires_grad=False
 
     @property
     def is_leaf(self):
         return self.__is_leaf
     @is_leaf.setter
     def is_leaf(self, value):
+        try:
+            if not isinstance(value, bool):
+                raise ValueError("is_leaf must be a boolean")
+        except ValueError as e:
+            print(f"ValueError: is_leaf.setter, {e}")
         self.__is_leaf = value
+    @is_leaf.deleter
+    def is_leaf(self): #deletes is_leaf by setting it to default
+        self.__is_leaf=True
 
     @property
     def shape(self):
