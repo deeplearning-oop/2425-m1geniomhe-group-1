@@ -135,26 +135,33 @@ tensor([2., 4., 6.])
 
 * Attributes:  
     - `data`: the data of the tensor (list or numeric)   
-    - `dtype`: the datatype of the tensor (dtype object)    
+    - `dtype`: the datatype of the tensor (dtype object), default will be `float64` because easier to convert int to float and if tehre is one float in the tensor teh dtype should be float (avoid errors, unless we create a mthod to check if all are int then we can set an automatic assignment function)      
     - `shape`: the shape/dimensions of the tensor (list)  
-    - `ndim`: the number of dimensions of the tensor (int)  
+    - `ndim`: the number of dimensions of the tensor (int)   
+    - `requires_grad`: whether to calculate the gradient of the tensor (bool), default is False like in pytorch  
+    - `is_leaf`: whether the tensor is a leaf in the computation graph (bool), default is True like in pytorch  
 * Methods:  
     * Dunders:  
         - `__init__`: instanciates the object of type Tensor  
         - `__repr__`: returns the string representation of the tensor  
         - `__str__`: returns the string representation of the tensor  
-        - `__getitem__`: returns the element at the given index  
-        - `__eq__`: returns a tensor of booleans, where the values are True if the corresponding values in the tensors are equal, otherwise False  
-        - `__add__`: returns the sum of the tensors if they have the same shape  
-        - `__mul__`: returns the product of the tensors if they can be multiplied  
-        - `__sub__`: returns the difference of the tensors if they have the same shape  
-        - `__setattr__`: sets the value of the attribute of the tensor. Very important, used to validate the data input and the dtype, while validating data, we can also set the shape and ndim attributes.  
+        - `__iter__`: returns an iterator of the tensor (for the tensor to be iterable, it should be a tensor of tensors, where the lowest level is a scalar which is a 0D tensor)  **NOT IMPLEMENTED YET**  
+        - `__getitem__`: returns the element at the index given in the tensor (from top level list). Fruthermore, getting item from an item should be possible as it is a tensor of tensors. **NOT IMPLEMENTED YET**     
+        - `__eq__`: returns a tensor of booleans, where the values are True if the corresponding values in the tensors are equal, otherwise False  **NOT IMPLEMENTED YET**  
+        - `__add__`: returns the sum of the tensors if they have the same shape  **NOT IMPLEMENTED YET**  
+        - `__mul__`: returns the product of the tensors if they can be multiplied  **NOT IMPLEMENTED YET**  
+        - `__sub__`: returns the difference of the tensors if they have the same shape  **NOT IMPLEMENTED YET**  
+        - `__setattr__`: sets the value of the attribute of the tensor. Very important, used to validate the data input and the dtype, while validating data, we can also set the shape and ndim attributes.   
+        - `__len__`: returns the length of the tensor (number of elements in the tensor, and as `__getitem__`, it should be able to return the length of the tensor of tensors). Raises an error when given a 0D tensor (to match with pytorch functionality)  **NOT IMPLEMENTED YET** 
+        **NOT IMPLEMENTED YET**
     * Modulators (getters and setters): Normal implementation of getters and setters but worth noting:  
         - _data setter_: calls `__setattr__` so no need to validate explicitly in the setter, and automcatically assigns the shape and ndim attributes   
         - _dtype setter_: calls `__setattr__` so no need to validate explicitly in the setter  
         - _dtype deleter_: doesnt delete the dtype attribute, but sets it to default `float64`
         - _shape setter_: **does not allow to take shape from user**, it is automatically assigned by the data setter  
         - _ndim setter_: **does not allow to take ndim from user**, it is automatically assigned by the data setter (length of shape)  
+        - _requires\_grad and is\_leaf setter_ : makes sure the value is a boolean, otherwise raises a ValueError (handled in try except block) specifying the setter function raising the error, leaving its value to teh boolean value taht was prior to teh last setting attempt.  
+        - _requires\_grad and is\_leaf deleter_: sets the value to their respective default values (False and True)
     * Helper methods:  
         * validate_dtype(dt:str)->dtype: validates the dtype to be one enlisted within the enum and returns its dtype object (which is callable). This will be used in `__setattr__` method to validate the dtype.  
         * validate_data(data)->list: validates the data to be a list of numbers or list of lists of numbers and returns its DIMENSIONS (as part of the work to validate uniformity of dimensions and to ease out assingment). This will be used in `__setattr__` method to validate the data.   
