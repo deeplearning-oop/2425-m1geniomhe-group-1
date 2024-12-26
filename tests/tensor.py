@@ -166,11 +166,58 @@ class Tensor:
         self.__dtype = dtype
         self.__requires_grad = requires_grad
         self.__is_leaf = is_leaf
-        self.__dim = None #this will be set in the __setattr__ method
+        self.__shape = None #assigned in __setattr__
+        self.__ndim= None #assigned in __setattr__
+
+    @property
+    def data(self):
+        return self.__data
+    @data.setter
+    def data(self, value):
+        self.__data = value
+    
+    @property
+    def dtype(self):
+        return self.__dtype
+    @dtype.setter
+    def dtype(self, value):
+        self.__dtype = value
+    @dtype.deleter
+    def dtype(self): #deletes dtype by setting it to default
+        self.__dtype=float64
+    
+    @property
+    def requires_grad(self):
+        return self.__requires_grad
+    @requires_grad.setter
+    def requires_grad(self, value):
+        self.__requires_grad = value
+
+    @property
+    def is_leaf(self):
+        return self.__is_leaf
+    @is_leaf.setter
+    def is_leaf(self, value):
+        self.__is_leaf = value
+
+    @property
+    def shape(self):
+        return self.__shape
+    @shape.setter
+    def shape(self):
+        self.__shape = infer_dimensions(self.__data)
+
+    @property
+    def ndim(self):
+        return self.__ndim
+    @ndim.setter
+    def ndim(self):
+        self.__ndim = len(self.__shape)
         
 
     # ----- validating attributes -----
 
+    #should i use .data or .__data here !!!!!!!!???????
     def validate_dtype(dt):
         '''
         ### parameters
@@ -193,6 +240,7 @@ class Tensor:
             print(f"ValueError: {e}")
             return None
 
+    #should i use .data or .__data here !!!!!!!!???????
     def validate_tensor_input(input_data):
         '''
         ### parameters
@@ -220,6 +268,8 @@ class Tensor:
         except ValueError as e:
             print("ValueError: inputData", e)
     
+
+    #should i use .data or .__data here !!!!!!!!???????
     def cast_dtype(self):
         '''
         recursively cast the elements of a nested list to a given dtype (default is float64)
@@ -233,14 +283,26 @@ class Tensor:
         [1, 2, 3]
         ```
         '''
-        if isinstance(self.data, list):
-            return [self.cast_dtype(sublist, self.dtype) for sublist in self.data]
-        return self.dtype(self.data)
+        if isinstance(self.__data, list):
+            return [self.cast_dtype(sublist, self.__dtype) for sublist in self.__data]
+        return self.__dtype(self.__data)
     
     def __setattr__(self, name, value):
-        if name == 'dtype':
-            self.dtype = self.validate_dtype(value)
-        if name == 'data':
-            self.dim = self.validate_tensor_input(value)
-            self.data= self.cast_dtype()
+        '''sets dtype, data and shape (shape and ndim will be set using the setter)'''
+        if name == '_Tensor__dtype':
+            valid_datatype_value = self.validate_dtype(value)
+            super().__setattr__(name, valid_datatype_value)
+        if name == '_Tensor__data':
+            # self.__shape = self.validate_tensor_input(value) @we will set dim using teh sette
+            dimensions=self.validate_tensor_input(value)
+            super.__setattr__('_Tensor__data', self.cast_dtype())
+            super().__setattr__('_Tensor__shape', dimensions)
+  
         super().__setattr__(name, value)
+
+
+    def __repr__(self):
+        return f"Tensor({self.data}, dtype={self.dtype}, requires_grad={self.requires_grad}, is_leaf={self.is_leaf})"
+    
+    def __str__(self):
+        return f"Tensor({self.data})"

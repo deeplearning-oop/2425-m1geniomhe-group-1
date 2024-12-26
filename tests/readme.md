@@ -1,4 +1,4 @@
-# Wiki
+# documentation
 
 ## Library
 
@@ -10,11 +10,38 @@ The conventional design of the library:
 - documentation for each function, class and module is provided by a top text block surrounded bby triple quotes  
 - dependencies and their versions are found in the requirements.txt file  
 
-## Modules
+## Classes
+
+### dtype
+
+This Enum class is within the module `Tensor` and is used to define the data types of the tensor. It has 2 values: `int64` and `float64`. Each dtype object has a string representation and can be accessed by it through `dtype.__members__['int64']` or `dtype.__members__['float64']`for example.
+
+> [!NOTE]
+> For this stage of teh library design, we'll start with 2 possible dtypes: `int64` and `float64`. Why? Because these are the primitive datatype datatypes python have when using `int()` or `float()` functions to cast. So to ease out the casting, a next step would be to see how to cast for other dtypes (int32, float32).
+
+> [!TIP]
+> next enhancement can also provide a function to enlist the possible values to make it more ui friendly, but this is unnessecary as 1. its exactly equivalent to the one liner accessing it from the `__members__` dictionary and 2. the user is not meant to interact with the dtype object directly, but through the `Tensor` class. One can argue that user want to see what dtypes are available but for now, s/he' ll receive the list when an error is thrown if they assign an unavailable dtype through creating a Tensor object.  
+
+* Dunders:  
+    * `__repr__`: returns the string representation of the dtype object  
+    * `__str__`: _not implemented, it calls_ `__repr__`  
+    * `__call__`: makes the object callable, this way can perform `int()` or `float()` casting on the object through `dtype.int64()` or `dtype.float64()`   
+
+Aliasing was done in the Tensor module to make it a more torch-y way of accessing the dtype object:  
+```python
+int64 = dtype.int64
+float64 = dtype.float64
+```
+These variables will be loaded whenever teh Tensor module is imported (which should be the case in all modules of the library). And then, when accessed through our library, it can be accessed this way (exactly like torch):  
+
+```python
+>>> import our_torch_lib as torch
+>>> torch.int64
+```
 
 ### Tensor
 
-This module contains a class `Tensor` which take an input of numerics(scalars, 0D tesnors), ndarrays or multidimensional lists and instanciates an object of type `Tensor`.
+This class is within a module `Tensor` which take an input of numerics(scalars, 0D tesnors), ndarrays or multidimensional lists and instanciates an object of type `Tensor`.
 
 > [!NOTE]  
 > To create a tensor object, a function `tensor()` is used which is a factory function for the `Tensor` class.
@@ -33,7 +60,7 @@ Concerning **dtype**, we will create for now (version 1.0) an Enum with 2 values
 
 #### Playground: torch functionality
 
-#### DataTypes
+##### DataTypes
 
 in torch, dtype like `torch.float32` is not a class, but is of type `torch.dtype` which is of type type (so it's a class).
 
@@ -48,7 +75,7 @@ type
 Even though it is an instance of `torch.dtype`, it has no `__dict__` attribute, and is not callable, which makes the design of the `torch.dtype` class a bit ambiguous.
 
 
-##### Scalars
+###### Scalars
 Scalar has ndim=0, shape (Size) empty, so it's a 0D tensor  
 A scalar is defined when we give a single number (so numeric type) to the tensor constructor.  
 
@@ -58,7 +85,7 @@ A scalar is defined when we give a single number (so numeric type) to the tensor
 nb of dim:0; dim:[]; size:torch.Size([])
 ```
 
-##### N-D Tensors
+###### N-D Tensors
 When we give it a list of lists, notice that the ndim=number of opened brackets, and the shape is the number of elements in each bracket.  
 Othweise if np array, it's easier to process dimensions as we can use the `shape` attribute of the numpy array.  
 
@@ -68,7 +95,7 @@ Othweise if np array, it's easier to process dimensions as we can use the `shape
 nb of dim:2; dim:torch.Size([2, 3]); size:torch.Size([2, 3])
 ```
 
-##### Dunders
+###### Dunders
 
 - _Iterability_:  The tensor is an iterable of tensors, where the lowest level that isn't iterable is the 0 dimensional tensor (scalar)  
 
@@ -95,7 +122,44 @@ tensor([True, True, True])
 >>> t1 + t2
 tensor([2., 4., 6.])
 ```
+- _Multiplication_:  The tensor can be multiplied by another tensor if the shapes can perform matrix multiplication ((m,n) * (n,p) = (m,p)), otherwise it raises a (????). If one of them is a scalar, it will multiply each element of the tensor by the scalar.  
 
+```python
+#try some examples here
+```
+
+#### Implementation
+
+> [!CAUTION]
+> note for self: need to test the class, pay attention to ndim and shape setters not very sure about the restriction if its plausible (not taking value from user), if not, allow *args or even value but do not assign it to the attribute and print out a message of its inablity to assign the value. Also try matrix multiplication and check how cast_dtype works.
+
+* Attributes:  
+    - `data`: the data of the tensor (list or numeric)   
+    - `dtype`: the datatype of the tensor (dtype object)    
+    - `shape`: the shape/dimensions of the tensor (list)  
+    - `ndim`: the number of dimensions of the tensor (int)  
+* Methods:  
+    * Dunders:  
+        - `__init__`: instanciates the object of type Tensor  
+        - `__repr__`: returns the string representation of the tensor  
+        - `__str__`: returns the string representation of the tensor  
+        - `__getitem__`: returns the element at the given index  
+        - `__eq__`: returns a tensor of booleans, where the values are True if the corresponding values in the tensors are equal, otherwise False  
+        - `__add__`: returns the sum of the tensors if they have the same shape  
+        - `__mul__`: returns the product of the tensors if they can be multiplied  
+        - `__sub__`: returns the difference of the tensors if they have the same shape  
+        - `__setattr__`: sets the value of the attribute of the tensor. Very important, used to validate the data input and the dtype, while validating data, we can also set the shape and ndim attributes.  
+    * Modulators (getters and setters): Normal implementation of getters and setters but worth noting:  
+        - _data setter_: calls `__setattr__` so no need to validate explicitly in the setter, and automcatically assigns the shape and ndim attributes   
+        - _dtype setter_: calls `__setattr__` so no need to validate explicitly in the setter  
+        - _dtype deleter_: doesnt delete the dtype attribute, but sets it to default `float64`
+        - _shape setter_: **does not allow to take shape from user**, it is automatically assigned by the data setter  
+        - _ndim setter_: **does not allow to take ndim from user**, it is automatically assigned by the data setter (length of shape)  
+    * Helper methods:  
+        * validate_dtype(dt:str)->dtype: validates the dtype to be one enlisted within the enum and returns its dtype object (which is callable). This will be used in `__setattr__` method to validate the dtype.  
+        * validate_data(data)->list: validates the data to be a list of numbers or list of lists of numbers and returns its DIMENSIONS (as part of the work to validate uniformity of dimensions and to ease out assingment). This will be used in `__setattr__` method to validate the data.   
+        * cast_dtype()->list: performs casting of the data to dtype (as the dtype object is callable by design) and returns the new data. This will also be used in `__setattr__` method to assign the data attribute.  
+     
 
 
 ## References
