@@ -17,7 +17,7 @@ The conventional design of the library:
 This Enum class is within the module `Tensor` and is used to define the data types of the tensor. It has 2 values: `int64` and `float64`. Each dtype object has a string representation and can be accessed by it through `dtype.__members__['int64']` or `dtype.__members__['float64']`for example.
 
 > [!NOTE]
-> For this stage of teh library design, we'll start with 2 possible dtypes: `int64` and `float64`. Why? Because these are the primitive datatype datatypes python have when using `int()` or `float()` functions to cast. So to ease out the casting, a next step would be to see how to cast for other dtypes (int32, float32).
+> For this stage of the library design, we'll start with 2 possible dtypes: `int64` and `float64`. Why? Because these are the primitive datatype datatypes python have when using `int()` or `float()` functions to cast. So to ease out the casting, a next step would be to see how to cast for other dtypes (int32, float32).
 
 > [!TIP]
 > next enhancement can also provide a function to enlist the possible values to make it more ui friendly, but this is unnessecary as 1. its exactly equivalent to the one liner accessing it from the `__members__` dictionary and 2. the user is not meant to interact with the dtype object directly, but through the `Tensor` class. One can argue that user want to see what dtypes are available but for now, s/he' ll receive the list when an error is thrown if they assign an unavailable dtype through creating a Tensor object.  
@@ -32,7 +32,7 @@ Aliasing was done in the Tensor module to make it a more torch-y way of accessin
 int64 = dtype.int64
 float64 = dtype.float64
 ```
-These variables will be loaded whenever teh Tensor module is imported (which should be the case in all modules of the library). And then, when accessed through our library, it can be accessed this way (exactly like torch):  
+These variables will be loaded whenever the Tensor module is imported (which should be the case in all modules of the library). And then, when accessed through our library, it can be accessed this way (exactly like torch):  
 
 ```python
 >>> import our_torch_lib as torch
@@ -131,41 +131,45 @@ tensor([2., 4., 6.])
 #### Implementation
 
 > [!CAUTION]
-> note for self: need to test the class, pay attention to ndim and shape setters not very sure about the restriction if its plausible (not taking value from user), if not, allow *args or even value but do not assign it to the attribute and print out a message of its inablity to assign the value. Also try matrix multiplication and check how cast_dtype works.
+> note for self: need to test the class, pay attention to ndim and shape setters not very sure about the restriction if its plausible (not taking value from user), if not, allow *args or even value but do not assign it to the attribute and print out a message of its inablity to assign the value. Also try matrix multiplication and check how cast_dtype works. Also check out comments in the code, left some questions to answer
 
 * Attributes:  
     - `data`: the data of the tensor (list or numeric)   
-    - `dtype`: the datatype of the tensor (dtype object), default will be `float64` because easier to convert int to float and if tehre is one float in the tensor teh dtype should be float (avoid errors, unless we create a mthod to check if all are int then we can set an automatic assignment function)      
+    - `dtype`: the datatype of the tensor (dtype object), default will be `float64` because easier to convert int to float and if there is one float in the tensor the dtype should be float (avoid errors, unless we create a mthod to check if all are int then we can set an automatic assignment function)      
     - `shape`: the shape/dimensions of the tensor (list)  
     - `ndim`: the number of dimensions of the tensor (int)   
     - `requires_grad`: whether to calculate the gradient of the tensor (bool), default is False like in pytorch  
     - `is_leaf`: whether the tensor is a leaf in the computation graph (bool), default is True like in pytorch  
 * Methods:  
-    * Dunders:  
-        - `__init__`: instanciates the object of type Tensor  
-        - `__repr__`: returns the string representation of the tensor  
-        - `__str__`: returns the string representation of the tensor  
-        - `__iter__`: returns an iterator of the tensor (for the tensor to be iterable, it should be a tensor of tensors, where the lowest level is a scalar which is a 0D tensor)  **NOT IMPLEMENTED YET**  
-        - `__getitem__`: returns the element at the index given in the tensor (from top level list). Fruthermore, getting item from an item should be possible as it is a tensor of tensors. **NOT IMPLEMENTED YET**     
-        - `__eq__`: returns a tensor of booleans, where the values are True if the corresponding values in the tensors are equal, otherwise False  **NOT IMPLEMENTED YET**  
-        - `__add__`: returns the sum of the tensors if they have the same shape  **NOT IMPLEMENTED YET**  
-        - `__mul__`: returns the product of the tensors if they can be multiplied  **NOT IMPLEMENTED YET**  
-        - `__sub__`: returns the difference of the tensors if they have the same shape  **NOT IMPLEMENTED YET**  
-        - `__setattr__`: sets the value of the attribute of the tensor. Very important, used to validate the data input and the dtype, while validating data, we can also set the shape and ndim attributes.   
-        - `__len__`: returns the length of the tensor (number of elements in the tensor, and as `__getitem__`, it should be able to return the length of the tensor of tensors). Raises an error when given a 0D tensor (to match with pytorch functionality)  **NOT IMPLEMENTED YET** 
-        **NOT IMPLEMENTED YET**
-    * Modulators (getters and setters): Normal implementation of getters and setters but worth noting:  
+    * **Dunders**:  
+        - [x] `__init__`: instanciates the object of type Tensor  
+        - [x] `__repr__`: returns the string representation of the tensor  
+        - [x]  `__str__`: returns the string representation of the tensor like in pytorch (Tensor(1.0) for example)  
+        - [x] `__iter__`: returns an iterator of the tensor (for the tensor to be iterable, it should be a tensor of tensors, where the lowest level is a scalar which is a 0D tensor)  
+        - [x] `__getitem__`: returns the element at the index given in the tensor (from top level list). Fruthermore, getting item from an item should be possible as it is a tensor of tensors.     
+        - [ ] `__eq__`: returns a tensor of booleans, where the values are True if the corresponding values in the tensors are equal, otherwise False  **NOT IMPLEMENTED YET**  
+        - [x] `__add__`: returns the sum of the tensors if they have the same shape  
+        - [x] `__sub__`: returns the difference of the tensors if they have the same shape    
+        - [ ] `__mul__`: returns the product of the tensors if they can be multiplied  **NOT IMPLEMENTED YET**   
+        - [x] `__setattr__`: sets the value of the attribute of the tensor. Very important, used to validate the data input and the dtype, while validating data, we can also set the shape and ndim attributes.   
+        - [x] `__len__`: returns the length of the tensor (number of elements in the tensor, and as `__getitem__`, it should be able to return the length of the tensor of tensors). Raises an error (TypeError) when given a 0D tensor (to match with pytorch functionality).      
+    * **Modulators** (getters and setters): Normal implementation of getters and setters but worth noting:  
         - _data setter_: calls `__setattr__` so no need to validate explicitly in the setter, and automcatically assigns the shape and ndim attributes   
         - _dtype setter_: calls `__setattr__` so no need to validate explicitly in the setter  
         - _dtype deleter_: doesnt delete the dtype attribute, but sets it to default `float64`
         - _shape setter_: **does not allow to take shape from user**, it is automatically assigned by the data setter  
         - _ndim setter_: **does not allow to take ndim from user**, it is automatically assigned by the data setter (length of shape)  
-        - _requires\_grad and is\_leaf setter_ : makes sure the value is a boolean, otherwise raises a ValueError (handled in try except block) specifying the setter function raising the error, leaving its value to teh boolean value taht was prior to teh last setting attempt.  
+        - _requires\_grad and is\_leaf setter_ : makes sure the value is a boolean, otherwise raises a ValueError (handled in try except block) specifying the setter function raising the error, leaving its value to the boolean value taht was prior to the last setting attempt.  
         - _requires\_grad and is\_leaf deleter_: sets the value to their respective default values (False and True)
-    * Helper methods:  
+    * **Helper methods** _(static methods)_ :  
         * validate_dtype(dt:str)->dtype: validates the dtype to be one enlisted within the enum and returns its dtype object (which is callable). This will be used in `__setattr__` method to validate the dtype.  
-        * validate_data(data)->list: validates the data to be a list of numbers or list of lists of numbers and returns its DIMENSIONS (as part of the work to validate uniformity of dimensions and to ease out assingment). This will be used in `__setattr__` method to validate the data.   
-        * cast_dtype()->list: performs casting of the data to dtype (as the dtype object is callable by design) and returns the new data. This will also be used in `__setattr__` method to assign the data attribute.  
+        * validate_data(data:list or num)->list: validates the data to be a list of numbers or list of lists of numbers and returns its DIMENSIONS (as part of the work to validate uniformity of dimensions and to ease out assingment). This will be used in `__setattr__` method to validate the data.   
+        * cast_dtype(l:list, dt:dtype)->list: performs casting of the data to dtype (as the dtype object is callable by design) and returns the new data. This will also be used in `__setattr__` method to assign the data attribute.   
+    * **Math**:  
+        * [ ] `T`: returns the transpose of the tensor (still cant do it for more than 2d lists)
+
+> [!NOTE]  
+> ENCAPSULATION PORTRAYED. Future enhancement for helper methods is to make them outside the class (no longer accessible through the class name). The reason why its designed this way though is that this functionality is only used within the class and is not meant to be used outside of it. Static is important because the functionality belonds to the class and not to the instance. Maybe a minor enhacement would still keep it static but make them private (by adding an underscore before the name) to make it clear that they are not meant to be used by users nor by the class itself
      
 
 
@@ -173,8 +177,18 @@ tensor([2., 4., 6.])
 
 _references related to deep learning, ANNs, pytorch, oop and python module writing_
 
+for libraries writing:  
+
+- [private methods in python](https://www.datacamp.com/tutorial/python-private-methods-explained)
+
+for pytorch:
+
+* [pytorch documentation](https://pytorch.org/docs/stable/index.html)  
+* [pytorch github repo](https://github.com/pytorch/pytorch)
 * [pytorch for DL](https://www.learnpytorch.io/)  
 
 _To load large datasets, need to actually download them in a directory and then load them in the notebook by accessing a deafult path name which we have assigned in the implementation. e.g., download MNIST from web in data/MNIST can save images and labels each in a subdirectory, when we load we actually go through the files and convert them to tensors_
 
 * [CO large datasets download](https://oyyarko.medium.com/google-colab-work-with-large-datasets-even-without-downloading-it-ae03a4d0433e)  
+
+
