@@ -1,4 +1,5 @@
 from enum import Enum #for dtype
+import numpy as np
 
 
 #################################################################################
@@ -91,7 +92,7 @@ def check_dlist(l):
     if is_emptylist(l):
         raise ValueError('empty list provided')
     if not is_inner_numeric(l):
-        raise ValueError('all elements in the list must be numeric')
+        raise ValueError('all elements in the LIST must be NUMERIC')
     return True
 
 def infer_dimensions(nested_list):
@@ -119,18 +120,36 @@ def infer_dimensions(nested_list):
             'base case for scalars, reurn dim 0'
             return [0]  
         sub_shapes = [infer_dimensions(sublist) for sublist in nested_list]
+        
         if len(set(map(tuple, sub_shapes))) > 1:  
             '''
             # this condition takes all shapes of lists at the same level which are lists inside sub_shapes
             # makes them tuples and remove duplicates (set())
             # length should be 1 if the lists are uniform in shape
             '''
+
             raise ValueError(f"dimension mismatch detected: {sub_shapes}")
     
         return [len(nested_list)] + sub_shapes[0]  #combine this level with sub-dimensions so this way we have [2,2] for [[1,2],[3,4]] (sub_shapes[0] is the only item in the list)
     
     #if not a list (a scalar), no dimensions, need to return a list of length 0 in order to check for at the next base case
     return [] 
+
+
+# ---------------- helper functions for math operations ----------------
+def add_nested_lists(list1, list2):
+    '''this performs addition on multidimensional lists (including numerics)'''
+    if isinstance(list1, list) and isinstance(list2, list):
+        return [add_nested_lists(x, y) for x, y in zip(list1, list2)]
+    else:
+        return list1 + list2
+    
+def subtract_nested_lists(list1, list2):
+    '''this performs subtraction on multidimensional lists (including numerics)'''
+    if isinstance(list1, list) and isinstance(list2, list):
+        return [subtract_nested_lists(x, y) for x, y in zip(list1, list2)]
+    else:
+        return list1 - list2
 
 #################################################################################
 
@@ -139,6 +158,10 @@ class dtype(Enum):
     float64 = "float64"
 
     def __repr__(self):
+        return self.value
+
+    def __str__(self):
+        #retuns "int64" or "float64"
         return self.value
 
     def __call__(self, x):
@@ -161,13 +184,13 @@ int64 = dtype.int64
 float64 = dtype.float64
 
 class Tensor:
-    def __init__(self, data, dtype=float64, requires_grad=False, is_leaf=True):
+    def __init__(self, data, dtype='float64', requires_grad=False, is_leaf=True):
+        self.__dtype = dtype #important to declare it before data because we'll use to convert the data type
         self.__data = data
-        self.__dtype = dtype
         self.__requires_grad = requires_grad
         self.__is_leaf = is_leaf
-        self.__shape = None #assigned in __setattr__
-        self.__ndim= None #assigned in __setattr__
+        # self.__shape = None #assigned in __setattr__
+        # self.__ndim= None #assigned in __setattr__
 
     @property
     def data(self):
@@ -234,6 +257,7 @@ class Tensor:
     # ----- validating attributes -----
 
     #should i use .data or .__data here !!!!!!!!???????
+    @staticmethod
     def validate_dtype(dt):
         '''
         ### parameters
@@ -249,7 +273,9 @@ class Tensor:
         ```
         '''
         try:
-            if dt not in dtype.__members__.keys():
+            dt=str(dt)
+            if dt not in list(dtype.__members__.keys()):
+                print(f'testing: dt given to validte_dtype: {dt}, type: {type(dt)}')
                 raise ValueError(f"Invalid dtype given: {dtype}; Valid dtypes are from {list(dtype.__members__.keys())}")
             return dtype.__members__[dt]
         except ValueError as e:
@@ -257,6 +283,7 @@ class Tensor:
             return None
 
     #should i use .data or .__data here !!!!!!!!???????
+    @staticmethod
     def validate_tensor_input(input_data):
         '''
         ### parameters
@@ -286,7 +313,8 @@ class Tensor:
     
 
     #should i use .data or .__data here !!!!!!!!???????
-    def cast_dtype(self):
+    @staticmethod
+    def cast_dtype(l, dt=float64):
         '''
         recursively cast the elements of a nested list to a given dtype (default is float64)
 
@@ -299,26 +327,79 @@ class Tensor:
         [1, 2, 3]
         ```
         '''
-        if isinstance(self.__data, list):
-            return [self.cast_dtype(sublist, self.__dtype) for sublist in self.__data]
-        return self.__dtype(self.__data)
+        if isinstance(l, list):
+            return [Tensor.cast_dtype(sublist, dt) for sublist in l]
+        return dt(l)
     
     def __setattr__(self, name, value):
         '''sets dtype, data and shape (shape and ndim will be set using the setter)'''
+        # print(f'testing attributes automatic name mandling: {name}, the list is {self.__dict__}')
+        
         if name == '_Tensor__dtype':
-            valid_datatype_value = self.validate_dtype(value)
-            super().__setattr__(name, valid_datatype_value)
-        if name == '_Tensor__data':
+            # print('testing dtype value:', value,'its of type:', type(value)) #has to be string, successful
+            valid_datatype_value = Tensor.validate_dtype(value)
+            # super().__setattr__(name, valid_datatype_value)
+            self.__dict__[name] = valid_datatype_value
+        elif name == '_Tensor__data':
             # self.__shape = self.validate_tensor_input(value) @we will set dim using teh sette
-            dimensions=self.validate_tensor_input(value)
-            super.__setattr__('_Tensor__data', self.cast_dtype())
-            super().__setattr__('_Tensor__shape', dimensions)
-  
-        super().__setattr__(name, value)
+            dimensions=Tensor.validate_tensor_input(value)
+            # super().__setattr__( name, Tensor.cast_dtype(value))
+            self.__dict__[name] = Tensor.cast_dtype(value)
+            self.__dict__['_Tensor__shape'] = dimensions
+            self.__dict__['_Tensor__ndim'] = len(dimensions) if type(dimensions)==list else 0
+            # super().__setattr__(self,'_Tensor__shape', dimensions)
+        elif name=='_Tensor__shape':
+            dimensions=Tensor.validate_tensor_input(self.__data)
+            self.__dict__[name] = dimensions
+            self.__dict__['_Tensor__ndim'] = len(self.__shape)
+        elif name=='_Tensor__ndim':
+            self.__dict__[name] = len(self.__shape)
+        else:
+            super().__setattr__(name, value)
 
 
     def __repr__(self):
-        return f"Tensor({self.data}, dtype={self.dtype}, requires_grad={self.requires_grad}, is_leaf={self.is_leaf})"
+        return f"Tensor({self.__data}, dtype={self.__dtype}, requires_grad={self.__requires_grad}, is_leaf={self.__is_leaf})"
     
     def __str__(self):
-        return f"Tensor({self.data})"
+        return f"Tensor({self.__data})"  
+    
+    def __len__(self): 
+        try:
+            if self.__shape==[]:
+                raise TypeError("tensor is a scalar with 0 dimensions")
+        except TypeError as e:
+            print(f"TypeError: len(), {e}")
+            return None
+            
+        return self.__shape[0]
+    
+    def __iter__(self):
+        '''iterates over the tensor data'''
+        if is_numeric(self.__data):
+            yield self
+        else:
+            for i in self.__data:
+                yield Tensor(i, self.__dtype, self.__requires_grad, self.__is_leaf)
+
+    def __getitem__(self, key):
+        '''returns the item at the given index'''
+        return Tensor(self.__data[key], self.__dtype, self.__requires_grad, self.__is_leaf)
+        
+    def __add__(self, other):
+        '''adds two tensors'''
+        if self.__shape != other.__shape:
+            raise ValueError(f"shape mismatch: {self.__shape} != {other.__shape}, can only add tensors of the same shape")
+        new_data = add_nested_lists(self.__data, other.__data)
+        return Tensor(new_data, self.__dtype, self.__requires_grad, self.__is_leaf)
+        
+    def __sub__(self, other):
+        '''subtracts two tensors'''
+        if self.__shape != other.__shape:
+            raise ValueError(f"shape mismatch: {self.__shape} != {other.__shape}, can only subtract tensors of the same shape")
+        new_data = subtract_nested_lists(self.__data, other.__data)
+        return Tensor(new_data, self.__dtype, self.__requires_grad, self.__is_leaf)        
+    
+def tensor(data, dtype=float64, requires_grad=False, is_leaf=True):
+    '''imitates the torch.tensor() function'''
+    return Tensor(data, dtype, requires_grad, is_leaf)  
