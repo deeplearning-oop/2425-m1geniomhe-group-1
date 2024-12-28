@@ -1,9 +1,9 @@
 tests/*
-    !tests/readme.md  
-    !tests/modules
-    !tests/assets
-    !tests/notebooks
-        tests/notebooks/data
+!tests/readme.md  
+!tests/modules/  
+!tests/assets/
+!tests/notebooks
+tests/notebooks/data
 
 
 TODO.md
