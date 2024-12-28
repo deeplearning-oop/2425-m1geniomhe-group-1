@@ -1,5 +1,9 @@
 # documentation
 
+<!-- \usepackage[utf8]{inputenc} -->
+
+_this file is temporary in order to report the steps taken later in the report_
+
 ## Library
 
 The conventional design of the library:  
@@ -35,8 +39,8 @@ float64 = dtype.float64
 These variables will be loaded whenever the Tensor module is imported (which should be the case in all modules of the library). And then, when accessed through our library, it can be accessed this way (exactly like torch):  
 
 ```python
->>> import our_torch_lib as torch
->>> torch.int64
+>>> import our_torch_wannabe_lib as torch_wannabe
+>>> torch_wannabe.int64
 ```
 
 ### Tensor
@@ -54,13 +58,16 @@ When instanciating an object of type Tensor, we can give the following arguments
 - numpy array (not explicitly required to provide this functionality by the assignment, but might be useful when importing, tranforming and processing data)  
 - numeric (only really required to handle int32, int64, float32, float64), these numeric types should be defined in the library to imitate pytorch ui  
 
+> [!NOTE]
+> _did not implement a numpy output yet, even though its way easier to transform a list into numpy and use it as input for tensor but it's like cheating, as it already has all functionalities like iterability, multiplication, transposition... In here we're writing these from scratch with a list datatype_
+
 Need to validate for these types when creating a tensor (could be in `__setattr__` method of Tensor class OR could be handlede within the tensor() function since we want to make the user create the tensor through it, as it is the case in pytorch)
 
 Concerning **dtype**, we will create for now (version 1.0) an Enum with 2 values: `int64` and `float64`. This is because these are the primitive datatypes casted by python when we call either of the `int()` or `float()` functions. We will make these callable in order to perform the datatype casting and we will represent them as strings.
 
 #### Playground: torch functionality
 
-##### DataTypes
+##### dtypes
 
 in torch, dtype like `torch.float32` is not a class, but is of type `torch.dtype` which is of type type (so it's a class).
 
@@ -85,7 +92,7 @@ A scalar is defined when we give a single number (so numeric type) to the tensor
 nb of dim:0; dim:[]; size:torch.Size([])
 ```
 
-###### N-D Tensors
+##### N-D Tensors
 When we give it a list of lists, notice that the ndim=number of opened brackets, and the shape is the number of elements in each bracket.  
 Othweise if np array, it's easier to process dimensions as we can use the `shape` attribute of the numpy array.  
 
@@ -95,7 +102,7 @@ Othweise if np array, it's easier to process dimensions as we can use the `shape
 nb of dim:2; dim:torch.Size([2, 3]); size:torch.Size([2, 3])
 ```
 
-###### Dunders
+##### Dunders
 
 - _Iterability_:  The tensor is an iterable of tensors, where the lowest level that isn't iterable is the 0 dimensional tensor (scalar)  
 
@@ -114,6 +121,8 @@ tensor(1)
 tensor([True, True, True])
 ```
 
+##### Operations
+
 - _Addition_:  The tensor can be added to another tensor if the shapes are the same, otherwise it raises a `RuntimeError`. If one of them has float, the resulting tensor will have dtype of float.  
 
 ```python
@@ -122,11 +131,46 @@ tensor([True, True, True])
 >>> t1 + t2
 tensor([2., 4., 6.])
 ```
-- _Multiplication_:  The tensor can be multiplied by another tensor if the shapes can perform matrix multiplication ((m,n) * (n,p) = (m,p)), otherwise it raises a (????). If one of them is a scalar, it will multiply each element of the tensor by the scalar.  
+_same for subtraction_
+
+>[!CAUTION]  
+> pay attention to dtype changes that can result from operations, write a function to use in all of these that validates the end dtype of the tensor based on one of the tensors' dtype (an easy/lazy slution is to convert all to float64, or convert to float64 iff one of the tensors is float64)
+
+- _Multiplication_:  The tensor can be multiplied by a tensor of teh same shape in an `element-wise` manner. If one of them is a scalar, it will multiply each element of the tensor by the scalar. If we're havong a multiplication between a vector and a scalar, the scalar will be broadcasted to the vector. Same between a matrix and a scalar, a matrix and a vector.
+
+- _Matrix Multiplication_:  The tensor can be multiplied by another tensor if the shapes can perform matrix multiplication ((m,n) * (n,p) = (m,p)). In pytorch this is possible sing 2 different notations
 
 ```python
-#try some examples here
+>>> t1 = torch.tensor([[1,2,3],[4,5,6]])
+>>> t2 = torch.tensor([[1,2],[3,4],[5,6]])
+>>> t1 @ t2
+tensor([[22, 28],
+        [49, 64]])
+>>> t1.matmul(t2)  
+tensor([[22, 28],
+        [49, 64]])  
+>>> torch.matmul(t1, t2) #also m1.matmul(m2) 
+tensor([[22, 28],
+        [49, 64]])
 ```
+
+- _transpose_:  The tensor can be transposed.
+
+For 0d tensors, the transpose is deprecated, equivalent an identity function:  
+
+```python
+>>> t = torch.tensor(1)
+>>> t.T
+tensor(1)
+/tmp/ipykernel_3772/88739345.py:3: UserWarning: Tensor.T is deprecated on 0-D tensors. This function is the identity in these cases. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3691.)
+```
+
+Also deprecated for vectors.
+
+> [!IMPORTANT]
+> This T function returns an object of the same shape for both 0D and 1D tensors.  
+
+It works fine for 2+D tensors. In higher dimensions, the transpose is the same as the numpy transpose. 
 
 #### Implementation
 
@@ -166,20 +210,53 @@ tensor([2., 4., 6.])
         * validate_data(data:list or num)->list: validates the data to be a list of numbers or list of lists of numbers and returns its DIMENSIONS (as part of the work to validate uniformity of dimensions and to ease out assingment). This will be used in `__setattr__` method to validate the data.   
         * cast_dtype(l:list, dt:dtype)->list: performs casting of the data to dtype (as the dtype object is callable by design) and returns the new data. This will also be used in `__setattr__` method to assign the data attribute.   
     * **Math**:  
-        * [ ] `T`: returns the transpose of the tensor (still cant do it for more than 2d lists)
+        * [ ] `T`: returns the transpose of the tensor. Since this mathematical function performs the same transpose for 2+D numpy arrays, we will use numpy transpose. Implementing this function from scratch wont be as computationally feasible/efficient since numpy is known for its speed in matrix operations (it is written in C).
 
 > [!NOTE]  
 > ENCAPSULATION PORTRAYED. Future enhancement for helper methods is to make them outside the class (no longer accessible through the class name). The reason why its designed this way though is that this functionality is only used within the class and is not meant to be used outside of it. Static is important because the functionality belonds to the class and not to the instance. Maybe a minor enhacement would still keep it static but make them private (by adding an underscore before the name) to make it clear that they are not meant to be used by users nor by the class itself
+
+### Dataset
+
+This class is within a module `Dataset` which is used to load datasets. It is a parent class for all datasets that will be loaded in the library like MNIST.
+
+First an overview on how it works in pytorch:
+
+The `torchvision` library contains the modules datasets, dataloaders and transforms.  
+
+`MNIST` is designed as a child of datasets.  
+When loaded, it will download the MNIST dataset and store it within the working directory (here we're in `tests/notebooks/` of the main repo). The following directories and files will be created t10k-images-idx3-ubyte     t10k-labels-idx1-ubyte     train-images-idx3-ubyte     train-labels-idx1-ubyte
+t10k-images-idx3-ubyte.gz  t10k-labels-idx1-ubyte.gz  train-images-idx3-ubyte.gz  train-labels-idx1-ubyte.gz
+
+```text
+notebooks/ # -- the wd of this notebook --
+└── data/
+    └── MNIST/
+        └── raw/
+            ├── t10k-images-idx3-ubyte  
+            ├── t10k-labels-idx1-ubyte
+            ├── train-images-idx3-ubyte
+            ├── train-labels-idx1-ubyte
+            ├── t10k-images-idx3-ubyte.gz
+            ├── t10k-labels-idx1-ubyte.gz
+            ├── train-images-idx3-ubyte.gz
+            └── train-labels-idx1-ubyte.gz
+```
      
 
 
 ## References
 
+### tutorials
+
 _references related to deep learning, ANNs, pytorch, oop and python module writing_
 
-for libraries writing:  
+for libraries writing (+doc on github):  
 
-- [private methods in python](https://www.datacamp.com/tutorial/python-private-methods-explained)
+- [private methods in python](https://www.datacamp.com/tutorial/python-private-methods-explained)  
+- [python packaging](https://packaging.python.org/en/latest/tutorials/packaging-projects/)  
+- [python app in github (by github)](https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-python)   
+- [python package on github tutorial](https://qbee.io/docs/tutorial-github-python.html)  
+-
 
 for pytorch:
 
@@ -187,8 +264,18 @@ for pytorch:
 * [pytorch github repo](https://github.com/pytorch/pytorch)
 * [pytorch for DL](https://www.learnpytorch.io/)  
 
-_To load large datasets, need to actually download them in a directory and then load them in the notebook by accessing a deafult path name which we have assigned in the implementation. e.g., download MNIST from web in data/MNIST can save images and labels each in a subdirectory, when we load we actually go through the files and convert them to tensors_
+for datasets: 
+
+> _To load large datasets, need to actually download them in a directory and then load them in the notebook by accessing a deafult path name which we have assigned in the implementation. e.g., download MNIST from web in data/MNIST can save images and labels each in a subdirectory, when we load we actually go through the files and convert them to tensors_
 
 * [CO large datasets download](https://oyyarko.medium.com/google-colab-work-with-large-datasets-even-without-downloading-it-ae03a4d0433e)  
 
+for github docs:  
 
+- [diagrams in markdown](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams)  
+
+### tools
+
+- [figma](https://www.figma.com/) for designing images in explanation of the library design  
+- [diagrams.net](https://app.diagrams.net/) for designing the class diagrams of the library  
+- [carbon](https://carbon.now.sh/) for designing the code snippets in the documentation  
