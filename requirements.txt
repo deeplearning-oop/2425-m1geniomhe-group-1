@@ -1,1 +1,3 @@
-numpy==2.0.2
+numpy==2.0.2 #testing, might remove if no longer allow numpy input to tensor
+# pillow==10.4.0 #for image processing
+# opencv-contrib-python==4.10.0.84

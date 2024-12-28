@@ -1,1 +1,1 @@
-from .. import tensor
+from ..modules import tensor

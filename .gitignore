@@ -1,4 +1,9 @@
-test/
-notebook/
-tests/*/
-!tests/notebooks
+tests/*
+    !tests/readme.md  
+    !tests/modules
+    !tests/assets
+    !tests/notebooks
+        tests/notebooks/data
+
+
+TODO.md
