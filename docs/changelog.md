@@ -7,3 +7,4 @@
 - Primary documentation of the steps added in tests/ 🧪
 - Primary repository structure design to include: requirements.txt, LICENCE.md, VERSION and docs/
 
+
