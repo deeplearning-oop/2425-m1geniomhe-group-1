@@ -123,6 +123,9 @@ tensor([True, True, True])
 
 ##### Operations
 
+> [!CAUTION] 
+> these operatiobs should be done using CompGraph, so we will add backward and grad_fn attribute.. next
+
 - _Addition_:  The tensor can be added to another tensor if the shapes are the same, otherwise it raises a `RuntimeError`. If one of them has float, the resulting tensor will have dtype of float.  
 
 ```python
@@ -254,6 +257,7 @@ _references related to deep learning, ANNs, pytorch, oop and python module writi
 
 - [neural networks from scratch: math + python by The Independent Code (youtube)](https://www.youtube.com/watch?v=pauPCy_s0Ok&list=WL&index=75)  
     Some useful formulae (for backpropagation):  
+
     $$\frac{\partial E}{\partial W} = \frac{\partial E}{\partial Y} X^T; \frac{\partial E}{\partial B} = \frac{\partial E}{\partial Y};\frac{\partial E}{\partial X} = W^T \frac{\partial E}{\partial Y}$$  
 
     ```python 
@@ -293,12 +297,13 @@ _references related to deep learning, ANNs, pytorch, oop and python module writi
             #3. compute input gradient to propagate backward: ∂E/∂X = W^T ⋅ ∂E/∂Y
             return np.dot(self.weights.T, output_gradient)
     ```
-    > [!IMPORTANT]  
-    > In reality, in forward pass, it has an activation function, so it's `f(WX + B)`, but here we're doing only the linear part (`WX + B`)  
-    > The activation function will be implemented in the next layer (implemented in next step), output will have the same shape as the input.  
+    >> [!IMPORTANT]  
+    >> In reality, in forward pass, it has an activation function, so it's `f(WX + B)`, but here we're doing only the linear part (`WX + B`)  
+    >> The activation function will be implemented in the next layer (implemented in next step), output will have the same shape as the input.  
     [_figma board for drawings_](https://www.figma.com/board/KH2skMxUOiDIe27AOMbkrd/Untitled?node-id=0-1&p=f&t=MQ4mh3ljMjb1qY39-0)
 
     $$\frac{\partial E}{\partial X}=\frac{\partial E}{\partial Y} \odot f'(X)$$
+
     _this is done in one line through `np.multiply`_ 
 
     ```python
@@ -332,6 +337,7 @@ _references related to deep learning, ANNs, pytorch, oop and python module writi
     ```        
 
     for the error, taking MSE (mean squared error) as example:  
+
     $$E = \frac{1}{2} \sum_{i=1}^{n} (y_i - y^*_i)^2; \frac{\partial E}{\partial Y} = \frac{2}{n}(Y - Y^*)$$  
 
     ```python
