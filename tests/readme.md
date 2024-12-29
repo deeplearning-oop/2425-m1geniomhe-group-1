@@ -8,10 +8,10 @@ _this file is temporary in order to report the steps taken later in the report_
 
 The conventional design of the library:  
 - classes start with a capital letter  
-- functions start with a small letter and snake case, helper functions start with an underscore  
+- functions start with a small letter and snake case, helper functions start with an underscore (helper not applied yet)    
 - the library is divided into modules where each module is a python file  
 - each file contain one or more classes and functions related to the main class the module is named after  
-- documentation for each function, class and module is provided by a top text block surrounded bby triple quotes  
+- documentation for each function, class and module is provided by a top text block surrounded by triple quotes  
 - dependencies and their versions are found in the requirements.txt file  
 
 ## Classes
@@ -194,12 +194,12 @@ It works fine for 2+D tensors. In higher dimensions, the transpose is the same a
         - [ ] `__eq__`: returns a tensor of booleans, where the values are True if the corresponding values in the tensors are equal, otherwise False  **NOT IMPLEMENTED YET**  
         - [x] `__add__`: returns the sum of the tensors if they have the same shape  
         - [x] `__sub__`: returns the difference of the tensors if they have the same shape    
-        - [ ] `__mul__`: returns the product of the tensors if they can be multiplied  **NOT IMPLEMENTED YET**   
+        - [x] `__mul__`: returns the product of the tensors if they can be multiplied    
         - [x] `__setattr__`: sets the value of the attribute of the tensor. Very important, used to validate the data input and the dtype, while validating data, we can also set the shape and ndim attributes.   
         - [x] `__len__`: returns the length of the tensor (number of elements in the tensor, and as `__getitem__`, it should be able to return the length of the tensor of tensors). Raises an error (TypeError) when given a 0D tensor (to match with pytorch functionality).      
     * **Modulators** (getters and setters): Normal implementation of getters and setters but worth noting:  
         - _data setter_: calls `__setattr__` so no need to validate explicitly in the setter, and automcatically assigns the shape and ndim attributes   
-        - _dtype setter_: calls `__setattr__` so no need to validate explicitly in the setter  
+        - _dtype setter_: calls `__setattr__` so no need to validate explicitly in the setter. **Very important: when setting the dtype, it should cast the data to the new dtype, this is done in setter and not is `__setattr__` as dtype is the first attribute to be set when instanciating the object** (due to control flow and making sure we have dtype when `__setattr__` is called on data to cast it properly). Hence, it would give an error if we perform casting in `__setattr__` for a new instance of Tensor.  
         - _dtype deleter_: doesnt delete the dtype attribute, but sets it to default `float64`
         - _shape setter_: **does not allow to take shape from user**, it is automatically assigned by the data setter  
         - _ndim setter_: **does not allow to take ndim from user**, it is automatically assigned by the data setter (length of shape)  
@@ -210,7 +210,7 @@ It works fine for 2+D tensors. In higher dimensions, the transpose is the same a
         * validate_data(data:list or num)->list: validates the data to be a list of numbers or list of lists of numbers and returns its DIMENSIONS (as part of the work to validate uniformity of dimensions and to ease out assingment). This will be used in `__setattr__` method to validate the data.   
         * cast_dtype(l:list, dt:dtype)->list: performs casting of the data to dtype (as the dtype object is callable by design) and returns the new data. This will also be used in `__setattr__` method to assign the data attribute.   
     * **Math**:  
-        * [ ] `T`: returns the transpose of the tensor. Since this mathematical function performs the same transpose for 2+D numpy arrays, we will use numpy transpose. Implementing this function from scratch wont be as computationally feasible/efficient since numpy is known for its speed in matrix operations (it is written in C).
+        * [x] `T`: returns the transpose of the tensor. Since this mathematical function performs the same transpose for 2+D numpy arrays, we will use numpy transpose. Implementing this function from scratch wont be as computationally feasible/efficient since numpy is known for its speed in matrix operations (it is written in C).
 
 > [!NOTE]  
 > ENCAPSULATION PORTRAYED. Future enhancement for helper methods is to make them outside the class (no longer accessible through the class name). The reason why its designed this way though is that this functionality is only used within the class and is not meant to be used outside of it. Static is important because the functionality belonds to the class and not to the instance. Maybe a minor enhacement would still keep it static but make them private (by adding an underscore before the name) to make it clear that they are not meant to be used by users nor by the class itself
@@ -250,32 +250,130 @@ notebooks/ # -- the wd of this notebook --
 
 _references related to deep learning, ANNs, pytorch, oop and python module writing_
 
-for libraries writing (+doc on github):  
+#### for nn from scratch:
+
+- [neural networks from scratch: math + python by The Independent Code (youtube)](https://www.youtube.com/watch?v=pauPCy_s0Ok&list=WL&index=75)  
+    Some useful formulae (for backpropagation):  
+    $$\frac{\partial E}{\partial W} = \frac{\partial E}{\partial Y} X^T; \frac{\partial E}{\partial B} = \frac{\partial E}{\partial Y};\frac{\partial E}{\partial X} = W^T \frac{\partial E}{\partial Y}$$  
+
+    ```python 
+    from layer import Layer
+    import numpy as np
+
+    class Dense(Layer):
+        def __init__(self, input_size, output_size):
+            # Initialize weights and biases with random values
+            self.weights = np.random.randn(output_size, input_size)
+            self.bias = np.random.randn(output_size, 1)
+        
+        def forward(self, input):
+            # Forward pass: Y = W * X + B
+            self.input = input
+            return np.dot(self.weights, self.input) + self.bias
+        
+        def backward(self, output_gradient, learning_rate):
+            '''input taken: ∂E/∂Y (output_gradient) and learning_rate
+            output: ∂E/∂X (input_gradient) to propagate backward
+
+            3 steps:  
+            1. Compute weight gradient: ∂E/∂W = ∂E/∂Y ⋅ X^T  
+            2. update parameters: W = W - learning_rate * ∂E/∂W; B = B - learning_rate * ∂E/∂B  
+            3. Compute input gradient to propagate backward: ∂E/∂X = W^T ⋅ ∂E/∂Y
+            '''
+
+            #1. compute weight gradient: ∂E/∂W = ∂E/∂Y ⋅ X^T
+            weights_gradient = np.dot(output_gradient, self.input.T)
+            
+            #2. update param
+            # -- Update weights: W = W - learning_rate * ∂E/∂W
+            self.weights -= learning_rate * weights_gradient
+            # -- Update biases: B = B - learning_rate * ∂E/∂B; bias gradient: ∂E/∂B = ∂E/∂Y (bias gradient equals the output gradient directly)
+            self.bias -= learning_rate * output_gradient
+            
+            #3. compute input gradient to propagate backward: ∂E/∂X = W^T ⋅ ∂E/∂Y
+            return np.dot(self.weights.T, output_gradient)
+    ```
+    > [!IMPORTANT]  
+    > In reality, in forward pass, it has an activation function, so it's `f(WX + B)`, but here we're doing only the linear part (`WX + B`)  
+    > The activation function will be implemented in the next layer (implemented in next step), output will have the same shape as the input.  
+    [_figma board for drawings_](https://www.figma.com/board/KH2skMxUOiDIe27AOMbkrd/Untitled?node-id=0-1&p=f&t=MQ4mh3ljMjb1qY39-0)
+
+    $$\frac{\partial E}{\partial X}=\frac{\partial E}{\partial Y} \odot f'(X)$$
+    _this is done in one line through `np.multiply`_ 
+
+    ```python
+    from layer import Layer
+    import numpy as np
+
+    class Activation(Layer):
+        def __init__(self, activation, activation_prime):
+            self.activation = activation  # The activation function f(X)
+            self.activation_prime = activation_prime  # The derivative of the activation function f'(X)
+
+        def forward(self, input):
+            self.input = input
+            return self.activation(self.input)  # Apply the activation function f(X)
+
+        def backward(self, output_gradient, learning_rate):
+            # ∂E/∂X = ∂E/∂Y ⊙ f'(X)
+            return np.multiply(output_gradient, self.activation_prime(self.input))  # Element-wise multiplication
+    ```
+
+    _e.g. on implementing known activation functions_  
+    ```python
+    from activation import Activation
+    import numpy as np
+
+    class Tanh(Activation):
+        def __init__(self):
+            tanh = lambda x: np.tanh(x)  
+            tanh_prime = lambda x: 1-np.tanh(x)**2  
+            super().__init__(tanh, tanh_prime)  
+    ```        
+
+    for the error, taking MSE (mean squared error) as example:  
+    $$E = \frac{1}{2} \sum_{i=1}^{n} (y_i - y^*_i)^2; \frac{\partial E}{\partial Y} = \frac{2}{n}(Y - Y^*)$$  
+
+    ```python
+    import numpy as np
+
+    def mse(y_true, y_pred):
+        return np.mean(np.power(y_true - y_pred, 2))
+
+    def mse_prime(y_true, y_pred):
+        return 2 * (y_pred - y_true) / y_true.size
+    ```
+
+    Simple examples to test the implementation:  
+    * XOR: input(x1, x2) -> hidden(3 neurons - arbitrary but doen in practice) -> output(1 neuron)  (interesting bcs not linearly separable, need a non linear function to solve it)  
+    [check its code at this instant](https://youtu.be/pauPCy_s0Ok?si=ysfz0PYwwEzkoEI2&t=1677)
+
+
+#### for libraries writing (+doc on github):  
 
 - [private methods in python](https://www.datacamp.com/tutorial/python-private-methods-explained)  
 - [python packaging](https://packaging.python.org/en/latest/tutorials/packaging-projects/)  
 - [python app in github (by github)](https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-python)   
-- [python package on github tutorial](https://qbee.io/docs/tutorial-github-python.html)  
--
+- [python package on github tutorial](https://qbee.io/docs/tutorial-github-python.html)   
+- [github docum: diagrams in markdown](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams)  
 
-for pytorch:
+#### for pytorch:
 
 * [pytorch documentation](https://pytorch.org/docs/stable/index.html)  
 * [pytorch github repo](https://github.com/pytorch/pytorch)
 * [pytorch for DL](https://www.learnpytorch.io/)  
 
-for datasets: 
+#### for datasets: 
 
 > _To load large datasets, need to actually download them in a directory and then load them in the notebook by accessing a deafult path name which we have assigned in the implementation. e.g., download MNIST from web in data/MNIST can save images and labels each in a subdirectory, when we load we actually go through the files and convert them to tensors_
 
-* [CO large datasets download](https://oyyarko.medium.com/google-colab-work-with-large-datasets-even-without-downloading-it-ae03a4d0433e)  
+* [CO large datasets download](https://oyyarko.medium.com/google-colab-work-with-large-datasets-even-without-downloading-it-ae03a4d0433e)   
+* [MNIST official database to accesss](https://yann.lecun.com/exdb/mnist/)
 
-for github docs:  
 
-- [diagrams in markdown](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams)  
 
-### tools
+#### tools
 
-- [figma](https://www.figma.com/) for designing images in explanation of the library design  
+- [figma](https://www.figma.com/) for designing images in explanation of the library design (figboard for this project is [here](https://www.figma.com/board/KH2skMxUOiDIe27AOMbkrd/Untitled?node-id=0-1&p=f&t=MQ4mh3ljMjb1qY39-0)) 
 - [diagrams.net](https://app.diagrams.net/) for designing the class diagrams of the library  
 - [carbon](https://carbon.now.sh/) for designing the code snippets in the documentation  
