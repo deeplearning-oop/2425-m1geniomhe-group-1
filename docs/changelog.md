@@ -8,3 +8,7 @@
 - Primary repository structure design to include: requirements.txt, LICENCE.md, VERSION and docs/
 
 
+## [1.0.1] - 2024-12-30
+- Allowed numpy ndarray input to tensor through the static method validating the data input
+- Allowed direct conversion between tensor and numpy
+
