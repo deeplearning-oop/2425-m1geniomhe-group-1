@@ -177,6 +177,8 @@ It works fine for 2+D tensors. In higher dimensions, the transpose is the same a
 
 #### Implementation
 
+##### 1.0
+
 > [!CAUTION]
 > note for self: need to test the class, pay attention to ndim and shape setters not very sure about the restriction if its plausible (not taking value from user), if not, allow *args or even value but do not assign it to the attribute and print out a message of its inablity to assign the value. Also try matrix multiplication and check how cast_dtype works. Also check out comments in the code, left some questions to answer
 
@@ -187,6 +189,8 @@ It works fine for 2+D tensors. In higher dimensions, the transpose is the same a
     - `ndim`: the number of dimensions of the tensor (int)   
     - `requires_grad`: whether to calculate the gradient of the tensor (bool), default is False like in pytorch  
     - `is_leaf`: whether the tensor is a leaf in the computation graph (bool), default is True like in pytorch  
+    - `grad`: the gradient of the tensor, default is None like in pytorch  
+    - `grad_fn`: the function that calculated the gradient of the tensor (function), default is None like in pytorch  
 * Methods:  
     * **Dunders**:  
         - [x] `__init__`: instanciates the object of type Tensor  
@@ -194,10 +198,7 @@ It works fine for 2+D tensors. In higher dimensions, the transpose is the same a
         - [x]  `__str__`: returns the string representation of the tensor like in pytorch (Tensor(1.0) for example)  
         - [x] `__iter__`: returns an iterator of the tensor (for the tensor to be iterable, it should be a tensor of tensors, where the lowest level is a scalar which is a 0D tensor)  
         - [x] `__getitem__`: returns the element at the index given in the tensor (from top level list). Fruthermore, getting item from an item should be possible as it is a tensor of tensors.     
-        - [ ] `__eq__`: returns a tensor of booleans, where the values are True if the corresponding values in the tensors are equal, otherwise False  **NOT IMPLEMENTED YET**  
-        - [x] `__add__`: returns the sum of the tensors if they have the same shape  
-        - [x] `__sub__`: returns the difference of the tensors if they have the same shape    
-        - [x] `__mul__`: returns the product of the tensors if they can be multiplied    
+        - [ ] `__eq__`: returns a tensor of booleans, where the values are True if the corresponding values in the tensors are equal, otherwise False  **NOT IMPLEMENTED YET**   
         - [x] `__setattr__`: sets the value of the attribute of the tensor. Very important, used to validate the data input and the dtype, while validating data, we can also set the shape and ndim attributes.   
         - [x] `__len__`: returns the length of the tensor (number of elements in the tensor, and as `__getitem__`, it should be able to return the length of the tensor of tensors). Raises an error (TypeError) when given a 0D tensor (to match with pytorch functionality).      
     * **Modulators** (getters and setters): Normal implementation of getters and setters but worth noting:  
@@ -213,10 +214,36 @@ It works fine for 2+D tensors. In higher dimensions, the transpose is the same a
         * validate_data(data:list or num)->list: validates the data to be a list of numbers or list of lists of numbers and returns its DIMENSIONS (as part of the work to validate uniformity of dimensions and to ease out assingment). This will be used in `__setattr__` method to validate the data.   
         * cast_dtype(l:list, dt:dtype)->list: performs casting of the data to dtype (as the dtype object is callable by design) and returns the new data. This will also be used in `__setattr__` method to assign the data attribute.   
     * **Math**:  
-        * [x] `T`: returns the transpose of the tensor. Since this mathematical function performs the same transpose for 2+D numpy arrays, we will use numpy transpose. Implementing this function from scratch wont be as computationally feasible/efficient since numpy is known for its speed in matrix operations (it is written in C).
+        * [x] `T`: returns the transpose of the tensor. Since this mathematical function performs the same transpose for 2+D numpy arrays, we will use numpy transpose. Implementing this function from scratch wont be as computationally feasible/efficient since numpy is known for its speed in matrix operations (it is written in C).  
+        * [ ] mul: math operation, want to implement by taking itno consideration grad and grad_fn (computation graph)  
+        * [ ] matmul: math operation, want to implement by taking itno consideration grad and grad_fn (computation graph)  
+        * [ ] add: math operation, want to implement by taking itno consideration grad and grad_fn (computation graph)  
+        * [ ] sub: math operation, want to implement by taking itno consideration grad and grad_fn (computation graph)    
+        * [ ] truediv: math operation, want to implement by taking itno consideration grad and grad_fn (computation graph)  
 
 > [!NOTE]  
-> ENCAPSULATION PORTRAYED. Future enhancement for helper methods is to make them outside the class (no longer accessible through the class name). The reason why its designed this way though is that this functionality is only used within the class and is not meant to be used outside of it. Static is important because the functionality belonds to the class and not to the instance. Maybe a minor enhacement would still keep it static but make them private (by adding an underscore before the name) to make it clear that they are not meant to be used by users nor by the class itself
+> ENCAPSULATION PORTRAYED. Future enhancement for helper methods is to make them outside the class (no longer accessible through the class name). The reason why its designed this way though is that this functionality is only used within the class and is not meant to be used outside of it. Static is important because the functionality belonds to the class and not to the instance. Maybe a minor enhacement would still keep it static but make them private (by adding an underscore before the name) to make it clear that they are not meant to be used by users nor by the class itself  
+
+
+We will make library functions to generate tensors, also called Factories. These functions will be in the `Tensor` module and will be used to create tensors, *will be imported to allw access to them through just importing our library*.   
+
+- [x] tensor(): creates a tensor object from input data (list or numeric for now)  
+- [x] random(): creates a tensor object of random numbers   
+- [ ] zeros(): creates a tensor object of zeros  
+- [ ] ones(): creates a tensor object of ones  
+
+> [!TIP]  
+> maybe can implement these catories using decorator design
+
+##### 1.1 
+
+base teh data based on numpy array to provide a solid base in terms of operations and functionalities in partivular
+
+This step is ddetrementous towards the input validation steps designed as numpy would handle any consistencies.  
+
+For the sake of testing and providing a good reliable base, this is so far poorly documented and some extra validation steps can be added to allow for an ultimate functionality of the library.  
+
+
 
 ### Dataset
 
