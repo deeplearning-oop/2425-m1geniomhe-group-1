@@ -12,3 +12,9 @@
 - Allowed numpy ndarray input to tensor through the static method validating the data input
 - Allowed direct conversion between tensor and numpy
 
+## [1.0.2] - 2025-01-03
+- Added abstract class Dataset
+- Added MNIST child of Dataset:
+- 	Performing webscraping data, extraction raw -> IDX -> ndarray -> Tensor
+- 	Implemented abstract methods with capability to viz every item
+
