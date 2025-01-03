@@ -304,20 +304,62 @@ class MNIST(Dataset):
     def __len__(self):
         '''abstract method implementation: len() -> returns number of data points'''
         return self.__targets.shape[0]
+    
+    def __iter__(self):
+        '''
+        we will not access the dataset items through indexing (that calls __getattr__)
+        but we will use teh exact code of accessing the item as in that method adn do it for each (tensor image,target) tuple
+
+        main reason is taht we allowed for plotting the image in __getitem__ and we dont wanna plot every image when we iterate
+        '''
+        for index in range(len(self)):
+            # yield self[i] 
+            # -- we wont do this bcs by default we're plotting teh image and we dont wanna plot everyhting when we iterate
+            # -- instead we'll write __getitem__ implementation without plotting
+
+            data=self.__data[index]
+            data = np.expand_dims(data, axis=0)
+            tensor_data=tensor.Tensor(data)
+            target=self.__targets[index]
+            
+            return tensor_data, target
 
     def __getitem__(self, index):
-        '''abstract method implementation: getitem() -> returns a tuple of data and target'''
-        data=self.__data[index]
-        target=self.__targets[index]
+        '''abstract method implementation: dataset[i] -> returns a tuple of data (tensor) and target (int)
+        
+        Each item we access through indexing will be a tuple of (data, target) and will be plotted with the target as title
 
-        viz_ndarray(data, label=target, squeeze=True)
+        :D successful test :D (viz temporarily off for testing)
+        '''
+        if isinstance(index, slice): # -- handling slicing
+            data_slice = self.__data[index]
+            targets_slice = self.__targets[index]
 
-        return data, target
+            data_list=[np.expand_dims(datapoint, axis=0) for datapoint in data_slice]
+            print(f'data slice item shape: {data_slice[0].shape} of length {len(data_slice)}')
+            print(f'data list shape: shape: {data_list[0].shape} of length {len(data_list)}')
+            
+            tensor_data_list = [tensor.Tensor(datapoint) for datapoint in data_list]
+            target_list = [target for target in targets_slice]
+            
+            return list(zip(tensor_data_list, target_list))
+        else: # -- handling single index
+            data=self.__data[index]
+            
+            data = np.expand_dims(data, axis=0) # -- adding a dimension to make it (1, 28, 28) instead of (28, 28)
+            tensor_data=tensor.Tensor(data)
+            target=self.__targets[index]
+
+            # viz_ndarray(data, label=target, squeeze=True)
+            
+            return tensor_data, target
 
     def __repr__(self):
         return super().__repr__()
+    
+    
+
         
 
 if __name__=='__main__':
     test_dataset=MNIST(root='data', train=True, download=True)
-    print(test_dataset)
