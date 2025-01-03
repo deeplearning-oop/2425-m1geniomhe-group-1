@@ -4,6 +4,6 @@ this file allows the tests package to be imported as a module, purpose is to tes
 '''
 
 
-from .tensor import tensor #makes it accessible through the library name like torch.tensor()
-from .tensor import dtype, Tensor, int64, float64
+# from .tensor import tensor #makes it accessible through the library name like torch.tensor()
+# from .tensor import dtype, Tensor, int64, float64
 

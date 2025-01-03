@@ -6,16 +6,17 @@ This module contains implementation of class Dataset which is used to load and p
 
 '''
 
+from abc import ABC, abstractmethod
+
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+import pandas as pd
+
 from pathlib import Path
-from typing import Union
 import os
 import gzip
 import requests
-from typing import Union
-import pandas as pd
 from IPython.display import display
 
 import tensor 
@@ -23,11 +24,13 @@ import tensor
 
 def image_to_ndarray(image_path,grey=False):
     '''
-    takes an image path and transforms it inot a numpy array \
+    takes an image path and transforms it inot a numpy array 
+    
         if grey -> image is in 2 dimensions
         if not grey -> image is in 3 (rgb channels)
 
-    depends on nympy and cv2 \
+    depends on nympy and cv2 
+
     :D successful test :D
     '''
 
@@ -38,11 +41,11 @@ def image_to_ndarray(image_path,grey=False):
 
 def image_to_tensor(image_path, grey=False):
     '''
-    takes an image path and transforms it inot a tensor \
+    takes an image path and transforms it inot a tensor 
         if grey -> image is in 2 dimensions
         if not grey -> image is in 3 (rgb channels)
 
-    depends on nympy and cv2 \
+    depends on nympy and cv2 
     :D successful test :D
     '''
     pixels=image_to_ndarray(image_path, grey=grey)
@@ -52,7 +55,7 @@ def viz_ndarray(ndarray, label=None, squeeze=False):
     '''
     takes a multidimensional array of an image and plots it, if label provided makes it a title
 
-    params:  \
+    params:  
     * ndarray: np.ndarray (or tensor)
     * label: str (optional)  
     * squeeze: bool (optional), if True it squeezes a 2D image thats (1, 28, 28) to (28, 28) for instance
@@ -114,10 +117,10 @@ def read_idx(file_path):
     """
     reads an IDX file and returns the data as a numpy array
     
-    param:\ 
+    param:
         file_path (str): Path to the IDX file
     
-    returns:\ 
+    returns:
         np.ndarray
     """
     with open(file_path, 'rb') as f:
@@ -133,33 +136,70 @@ def read_idx(file_path):
         
     return data
 
-#####################
-#####################
-# testing:
-path=Path('data/MNIST')
-path.mkdir(exist_ok=True)
-#####################
-#####################
+def beautify_repr(obj):    
 
-class Dataset:
+    def dictify_dataset(dataset):
+        '''
+        takes a dataset object and returns a dictionary of its attributes
+
+        '''
+        return {
+            'data dimensions': dataset.data.shape, #can change it to len when implemented
+            'data points': dataset.data.shape[0],
+            'split': 'train' if dataset.train else 'test',
+            # 'root directory holding data': dataset.__root,
+            'transform': dataset.transform,
+            'target transform': dataset.target_transform
+        }
+
+    def dfy_data(data):
+        '''
+        takes a dictionary of data and returns a pandas dataframe
+
+        '''
+        df=pd.DataFrame(data)
+        return df.T
+
+    data=dictify_dataset(obj)
+    df=dfy_data(data)
+    display(df)
+
+
+class Dataset(ABC):
     '''
-    Parent Class for all datasets
-    ------------------------------
+    Parent Class for all datasets (abstract)
+    -------------------------------------
+
+    This class provides a blueprint for all datasets that will be used in the project    
+    Most important thing is that it enforces all its children to have these abstract methods:   
+    * __getitem__  
+    * __len__  
     '''
-    def __init__(self, root:Union(str, Path)='data/', transform=None, target_transform=None):
-        self.__root=root
+    def __init__(self, root='data/', transform=None, target_transform=None):
+        self.__root=Path(root)
         self.__transform=transform
         self.__target_transform=target_transform
         
     # def __len__(self):
     #     raise NotImplementedError
 
-    # def __getitem__(self.__index):
-    #     raise NotImplementedError
+    @abstractmethod
+    def __getitem__(self,index):
+        raise NotImplementedError
+
+    @abstractmethod
+    def __len__(self):
+        raise NotImplementedError
+
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(root={self.__root}, transform={self.__transform}, target_transform={self.__target_transform})'
-
+        beautify_repr(self)
+        return f'''{self.__class__.__name__} object: (
+    root: {self.__root},
+    transform: {self.__transform},
+    target_transform: {self.__target_transform} 
+)'''
+    
 
 class MNIST(Dataset):
     '''
@@ -170,22 +210,29 @@ class MNIST(Dataset):
     we will use this mirror: ossci-datasets.s3.amazonaws.com
     '''
 
-    url='https://ossci-datasets.s3.amazonaws.com/mnist/'
-    sets={
+    url = 'https://ossci-datasets.s3.amazonaws.com/mnist/'  
+    sets = {
         'train-images-idx3-ubyte',
         'train-labels-idx1-ubyte',
         't10k-images-idx3-ubyte',
         't10k-labels-idx1-ubyte'
     }
+    sources={
+        'https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz',
+        'https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz',
+        'https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz',
+        'https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz'
+    }
 
-    sources={url+s for s in sets}
 
-    def __init__(self, root:Union(str, Path),train=True,download=True,transform=None,target_transform=None):
+    def __init__(self, root='data',train=True,download=True,transform=None,target_transform=None):
+        
         super().__init__(root, transform=transform, target_transform=target_transform)
         self.__root=Path(root)/'MNIST'
         self.__raw=self.__root/'raw'
+
         if download:
-            self.__download()
+            self.download()
 
         self.__train=train
         if self.__train:
@@ -197,6 +244,9 @@ class MNIST(Dataset):
 
         self.__data=tensor.Tensor(data) #need to make dtype as uint8
         self.__targets=tensor.Tensor(labels) #same
+
+        self.__transform=transform
+        self.__target_transform=target_transform
 
     # -- getters and setters --
     @property
@@ -220,12 +270,13 @@ class MNIST(Dataset):
     def train(self, value):
         self.__train=value
 
-    @property
-    def root(self):
-        return self.root
-    @root.setter
-    def root(self, value):
-        self.__root=value
+    #max recursion
+    # @property
+    # def root(self):
+    #     return self.root
+    # @root.setter
+    # def root(self, value):
+    #     self.__root=value
     
     @property
     def transform(self):
@@ -251,36 +302,22 @@ class MNIST(Dataset):
     
     # -- dunders --
     def __len__(self):
-        self.__data.shape
+        '''abstract method implementation: len() -> returns number of data points'''
+        return self.__targets.shape[0]
+
+    def __getitem__(self, index):
+        '''abstract method implementation: getitem() -> returns a tuple of data and target'''
+        data=self.__data[index]
+        target=self.__targets[index]
+
+        viz_ndarray(data, label=target, squeeze=True)
+
+        return data, target
 
     def __repr__(self):
-        temp= {
-            'class_name': self.__class__.__name__,
-            'number_of_datapoints': len(self),
-            'directory': self.__root,
-            'train': self.__train,
-            'split': 'train' if self.__train else 'test',
-            'transforms': self.__transform if self.__transform else 'No transforms'
-        }
-        df=pd.DataFrame(temp, index=[0])
-        display(df)
-        return ''
-
-    def __str__(self):
-        summary=f'''
-        -----------------------------------------
-        |    {self.__class__.__name__} object:  |
-        -----------------------------------------
-
-                Number of datapoints: {len(self)}
-                Directory where the data is: {self.__root}
-                train: {self.__train}
-                Split: {'train' if self.__train else 'test'}  
-                {f'Transforms:{self.__transform}' if self.__transform else 'No transforms'}  
-                {f'Target Transforms:{self.__target_transform}' if self.__target_transform else 'No target transforms'}
-        -----------------------------------------
-
-        '''
-        # return __repr__(self)
-        return summary
+        return super().__repr__()
         
+
+if __name__=='__main__':
+    test_dataset=MNIST(root='data', train=True, download=True)
+    print(test_dataset)
