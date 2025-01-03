@@ -12,6 +12,9 @@ class Tensor:
     @property
     def shape(self):
         return self.data.shape
+    
+    def __getitem__(self, idx):
+        return self.data[idx]
 
     def __add__(self, other):
         
