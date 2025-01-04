@@ -49,6 +49,7 @@ loss_fn = CrossEntropyLoss()
 for _ in range(501):
     x=Tensor(X_train, requires_grad=False)
     y=Tensor(Y_train, requires_grad=False)
+    print(y.data.shape)
     optimizer.zero_grad()
     y_hat = model(x)
     loss = loss_fn(y, y_hat)

@@ -53,7 +53,7 @@ class CrossEntropyLoss(Loss):
         epsilon = 1e-15
         y_pred = np.clip(y_hat.data, epsilon, 1 - epsilon)
         
-        one_hot_y = np.zeros((y.data.size, y.data.max() + 1))
+        one_hot_y = np.zeros((y.data.size, y_hat.data.shape[0]))
         one_hot_y[np.arange(y.data.size), y.data] = 1
         one_hot_y = one_hot_y.T
         

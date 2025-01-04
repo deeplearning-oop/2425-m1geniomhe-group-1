@@ -12,7 +12,7 @@ class Linear(Module):
     #         object.__setattr__(self,name, value)
 
     def _random_init(self, *shape):
-        return np.random.rand(*shape) - 0.5
+        return np.random.rand(*shape) - 0.5 #centered around 0
     
     def forward(self, x):
         return self.weights @ x + self.bias
