@@ -14,6 +14,30 @@ class Tensor:
     def shape(self):
         return self.data.shape
 
+    def __getitem__(self, idx):
+        '''important for dataset and dataloaders'''
+        return self.data[idx]
+
+    # ----- to flatten images --------
+    def view(self):
+        '''same as torch's functionality, it collapses all dimensions into 1'''
+        nd_array=self.data
+        reshaped= nd_array.reshape(-1)
+        return Tensor(reshaped)
+    
+    def flatten_batch(self):
+        '''
+        given that a tenosr is a batch of length batch_size, it'll flatten the dimensions while conserving the batch dimension
+    
+        e.g., it will take (batch_size,1,28,28) and return (batch_size,784)
+
+        <!> used for testing while batch training images
+        '''
+        nd_array=self.data
+        reshaped= nd_array.reshape(nd_array.shape[0],-1)
+        return Tensor(reshaped)
+
+    
     def __add__(self, other):
         
         other = other if isinstance(other, Tensor) else Tensor(other)
