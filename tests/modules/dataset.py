@@ -203,9 +203,6 @@ class Dataset(ABC):
         self.__root=Path(root)
         self.__transform=transform
         self.__target_transform=target_transform
-        
-    # def __len__(self):
-    #     raise NotImplementedError
 
     @abstractmethod
     def __getitem__(self,index):
@@ -328,22 +325,29 @@ class MNIST(Dataset):
         self.__root=Path(root)/'MNIST'
         self.__raw=self.__root/'raw'
 
+        # -- these are assigned first as they're needed to define data and target
+        self.__transform=transform
+        self.__target_transform=target_transform
+
         if download:
             self.download()
 
         self.__train=train
+
         if self.__train:
+            # -- load the training set
             data=read_idx(self.__raw/'train-images-idx3-ubyte')
             labels=read_idx(self.__raw/'train-labels-idx1-ubyte')
         else:
+            # -- load the testing set
             data=read_idx(self.__raw/'t10k-images-idx3-ubyte')
             labels=read_idx(self.__raw/'t10k-labels-idx1-ubyte')
 
-        self.__data=Tensor(data) #need to make dtype as uint8
-        self.__targets=Tensor(labels) #same
+        # -- transformation can be held in __setattr__ to account for the case where none is given
+        self.__data=Tensor(data) if transform is None else transform(Tensor(data))
+        self.__targets=Tensor(labels) if target_transform is None else target_transform(Tensor(data))
 
-        self.__transform=transform
-        self.__target_transform=target_transform
+
 
     # -- getters and setters --
     @property
@@ -455,9 +459,9 @@ class MNIST(Dataset):
         return super().__repr__()
     
     
-# for testing
-from torchvision import datasets  
-import torch      
+# -- for testing
+# from torchvision import datasets  
+# import torch      
 
 # if __name__=='__main__':
 #     my_train_data=MNIST(root='data',train=True)
