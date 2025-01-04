@@ -411,8 +411,15 @@ class MNIST(Dataset):
         return super().__repr__()
     
     
+# for testing
+from torchvision import datasets  
+import torch      
 
-        
-
-# if __name__=='__main__':
-#     test_dataset=MNIST(train=False)
+if __name__=='__main__':
+    my_train_data=MNIST(root='data',train=True)
+    my_train_ndarray=my_train_data.data.data
+    my_train_in_tensor=torch.tensor(my_train_ndarray)
+    torch_train_data=datasets.MNIST(root='data',train=True,download=True)
+    print(type(torch_train_data.data))
+    print(torch.all(my_train_in_tensor==torch_train_data.data))
+    # tensor(True)

@@ -33,6 +33,12 @@ X_train = data_train[1:n]
 X_train = X_train / 255
 _,m_train = X_train.shape
 
+# split X_train,y_train into a list of batches of size 32
+# X_train_batches = np.split(X_train, m_train//32, axis=1)
+# Y_train_batches = np.split(Y_train, m_train//32)
+
+
+
 # print('X dev shape:', X_dev.shape)
 # print('Y dev shape:', Y_dev.shape)
 
@@ -54,7 +60,7 @@ print(f'length of training data: {len(train_data)}')
 # print(train_data)
 # print(test_data)
 
-train_loader = DataLoader(dataset=train_data, batch_size=10000, shuffle=True)
+train_loader = DataLoader(dataset=train_data, batch_size=32, shuffle=True)
 test_loader = DataLoader(dataset=test_data, batch_size=32, shuffle=True)
 
 # for i,(x, y) in enumerate(train_loader):
@@ -62,7 +68,7 @@ test_loader = DataLoader(dataset=test_data, batch_size=32, shuffle=True)
 #     if i==5:
 #         break
 
-# print(X_train.shape)
+print(X_train.shape)
 
 ##########################################
 
@@ -89,14 +95,14 @@ for _ in range(500):
         # viz_ndarray(x_wannabe[0], squeeze=True, label=y_wannabe[0])
         x_wannabe.flatten_batch()
         x=x_wannabe/255
-        print(x)
+        # print(x)
         y=y_wannabe
         # print(f'one batch x shape: {x.shape}, y shape: {y.shape}')
-    optimizer.zero_grad()
-    y_hat = model(x)
-    loss = loss_fn(y, y_hat)
-    loss.backward()
-    optimizer.step()
+        optimizer.zero_grad()
+        y_hat = model(x)
+        loss = loss_fn(y, y_hat)
+        loss.backward()
+        optimizer.step()
     if _ % 100 == 0:
         print(f'epoch: {_}')    
         print(f'Loss: {loss.data}') 
