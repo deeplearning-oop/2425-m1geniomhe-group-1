@@ -6,5 +6,7 @@ tests/*
 tests/notebooks/data
 tests/modules/data
 
+src/data
+
 TODO.md
 .gitignore
