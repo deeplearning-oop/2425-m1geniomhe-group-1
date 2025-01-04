@@ -1,8 +1,9 @@
 from tensor import Tensor
 
 class Parameter(Tensor):
-    def __init__(self, value):
-        super().__init__(value, requires_grad=True, is_leaf=True)
+    
+    def __init__(self, data):
+        super().__init__(data, requires_grad=True, is_leaf=True)
         
-    def __str__(self):
-        return str(self.data)
+    def __repr__(self):
+        return f"Parameter(data={self.data})"
