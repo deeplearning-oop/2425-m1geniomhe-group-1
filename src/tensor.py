@@ -26,16 +26,20 @@ class Tensor:
         t.data=reshaped
         return t
     
-
     def flatten_batch(self):
+        '''
+        given that a tenosr is a batch of length batch_size, it'll flatten the dimensions while conserving the batch dimension (and transpsoing to match pytorch's behavior)
+    
+        e.g., it will take (batch_size,1,28,28) and return (784, batch_size) 
 
+        <!> used for testing while batch training images
+        '''
         flattened = np.array([img.flatten() for img in self.data])  # Shape: (32, 784)
-        
         transposed = flattened.T  # Shape: (784, 32)
 
         self.data = transposed
         return self
-
+    
     @property
     def shape(self):
         return self.data.shape
