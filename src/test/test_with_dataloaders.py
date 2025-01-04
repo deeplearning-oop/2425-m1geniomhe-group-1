@@ -1,3 +1,8 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -9,8 +14,8 @@ from loss import CrossEntropyLoss, MSE
 from tensor import Tensor
 import numpy as np
 
-from new_dataset import MNIST
-from new_dataloader import DataLoader
+from dataset import MNIST
+from dataloader import DataLoader
 
 # -- using our implemented dataset module
 train_data = MNIST(root='data/', train=True, download=True)
