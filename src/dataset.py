@@ -2,7 +2,24 @@
 Dataset module
 ---------------
 
-This module contains implementation of class Dataset which is used to load and preprocess example datasets like MNIST
+This module contains implementation of class Dataset which is used to load and preprocess example datasets like MNIST  
+Hence, contains implementation of children classes like MNIST
+
+Some useful functiosn are also implemented here or imported from transform like:  
+* image_to_ndarray: (path, grey=False) -> np.ndarray
+* image_to_tensor: (path, grey=False) -> tensor.Tensor  
+* viz_ndarray: (Union(np.ndarray, tensor.Tensor), label=None, squeeze=False) -> None   
+* url_to_gunzipped_file: (url, path)-> None    
+* read_idx: (file_path) -> np.ndarray  
+* beautify_repr: (obj:dataset.Dataset) -> None
+
+These helpers are in here because by default behavior of MNIST in pytorch is to download the dataset, store it and gets it directly in tensor form with dtype=torch.uint8  
+We are imitating thus the same behavior by downloading, storing and reading images in idx format and transforming them into np arrays of type uint8 then storing them in tensor.Tensor objects
+
+Classes:  
+* Dataset: (ABC)  
+    * MNIST: (Dataset)  
+
 
 '''
 
@@ -174,6 +191,13 @@ class Dataset(ABC):
     Most important thing is that it enforces all its children to have these abstract methods:   
     * __getitem__  
     * __len__  
+
+    Attributes:  
+    * root: Path/str (default='data/')  
+    * transform: callable (default=None)   
+    * target_transform: callable (default=None)  
+
+    the callable transforms are Transform ojects that are callable :)
     '''
     def __init__(self, root='data/', transform=None, target_transform=None):
         self.__root=Path(root)
@@ -260,7 +284,27 @@ class MNIST(Dataset):
     ------------------------------
     ~ https://yann.lecun.com/exdb/mnist/
 
-    we will use this mirror: ossci-datasets.s3.amazonaws.com
+    we will use this mirror: ossci-datasets.s3.amazonaws.com because it's the only one working  
+
+    Attributes:  
+        * url: str, url of the dataset CLASS attribute
+        * sets: set, names of the files in the dataset CLASS attribute   
+        * sources: set, urls of the files in the dataset CLASS attribute  
+        * root: Path, root directory to store the dataset  
+        * raw: Path, directory to store the raw dataset files  (derived from root)
+        * download: bool, default=True, download the dataset files (if not present in root/raw directory will raise an error if set to False)
+        * data: tensor.Tensor, data points  
+        * targets: tensor.Tensor, target labels  
+        * train: bool, default=True  (set train to False to get the test set)
+        * transform: callable, default=None  
+        * target_transform: callable, default=None  
+
+    Methods:
+        * download: () -> None, downloads the dataset files from the urls in sources  
+        * __len__: () -> int, returns number of data points  
+        * __iter__: () -> tuple(tensor.Tensor, int), yields a tuple of data and target
+        * __getitem__: (index) -> tuple(tensor.Tensor, int), returns a tuple of data and target  
+        * __repr__: () -> None, prints the dataset object in a nice way  
     '''
 
     url = 'https://ossci-datasets.s3.amazonaws.com/mnist/'  
@@ -411,9 +455,9 @@ class MNIST(Dataset):
         return super().__repr__()
     
     
-# for testing
-from torchvision import datasets  
-import torch      
+# -- for testing
+# from torchvision import datasets  
+# import torch      
 
 # if __name__=='__main__':
 #     my_train_data=MNIST(root='data',train=True)

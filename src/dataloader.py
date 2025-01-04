@@ -1,3 +1,8 @@
+'''
+dataloader module: home of the DataLoader class
+'''
+
+
 import random
 import numpy as np
 seed=42
@@ -20,6 +25,18 @@ class DataLoader:
     
     <!> next step would be to make it do parallel processing (multiprocessing) to speed up the process (only start with it when everything works right)
     
+    Attributes:  
+        * dataset: dataset.Dataset object (child of it since it's an abstract class)  
+        * batch_size: int, default=64  
+        * shuffle: bool, default=True  
+        * num_samples: int, number of samples in the dataset (derived from the dataset object)  
+
+    Methods:  
+        * __init__(self, dataset, batch_size=64, shuffle=True): constructor  
+        * __iter__(self): iterability  
+        * __len__(self): length of the dataloader  
+        * __getitem__(self, index): not indexable (raises TypeError, same as torch)
+
     '''
 
 
