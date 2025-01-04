@@ -189,28 +189,28 @@ class Tensor:
 
     def softmax(self):
         # Apply softmax to logits for numerical stability
-        # max_logits = np.max(self.data, axis=0, keepdims=True)  # Shape (1, N)
-        # exps = np.exp(self.data - max_logits)
-        # sum_exps = np.sum(exps, axis=0, keepdims=True)
-        # result = exps / sum_exps
-        result = np.exp(self.data) / sum(np.exp(self.data))
+        max_logits = np.max(self.data, axis=0, keepdims=True)  # Shape (1, N)
+        exps = np.exp(self.data - max_logits)
+        sum_exps = np.sum(exps, axis=0, keepdims=True)
+        result = exps / sum_exps
+        # result = np.exp(self.data) / sum(np.exp(self.data))
         
         out = Tensor(result, requires_grad=self.requires_grad)  # Output tensor
         out.parents = {self}  # Store parent tensors
 
         if self.requires_grad:
             def _backward(grad):
-                alpha=0
+                
                 # Compute softmax of the input
                 # softmax = exps / sum_exps  # Compute softmax
                 # Gradient of log-softmax
                 # grad_input = grad - np.sum(grad, axis=-1, keepdims=True) * softmax  # Backpropagate
-                grad = np.outer(result, result) - np.diag(result)
+                grad_input = result * (grad - np.sum(grad * result, axis=0, keepdims=True))
 
                 if self.grad is None:
-                    self.grad = grad  # Initialize grad if it's None
+                    self.grad = grad_input  # Initialize grad if it's None
                 else:
-                    self.grad += grad  # Accumulate gradients if grad already exists
+                    self.grad += grad_input  # Accumulate gradients if grad already exists
 
                 return grad  # Return gradient input for the next layer
 
