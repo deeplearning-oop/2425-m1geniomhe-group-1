@@ -29,6 +29,7 @@ class MSE(Loss):
         # Backward function to compute gradients
         def _backward(grad):
             # Gradient of the loss w.r.t y_hat
+            
             grad_input = 2 * (y_hat.data - y.data) / batch_size
             
             if y_hat.grad is None:
@@ -63,8 +64,9 @@ class CrossEntropyLoss(Loss):
         
         # Backward function to compute gradients
         def _backward(grad):
-            
-            grad_input = (y_hat.data - one_hot_y) / y.data.size
+                        
+            # grad_input = (y_hat.data - one_hot_y) / y.data.size
+            grad_input = - (one_hot_y / y_pred) / y.data.size
             
             if y_hat.grad is None:
                 y_hat.grad = grad_input
