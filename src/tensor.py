@@ -10,6 +10,9 @@ class Tensor:
         self.grad_fn_name = None
         self.parents = set()
 
+    def __getitem__(self, idx):
+        return self.data[idx]
+
     @property
     def shape(self):
         return self.data.shape
