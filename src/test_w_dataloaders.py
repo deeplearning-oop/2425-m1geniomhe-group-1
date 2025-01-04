@@ -18,6 +18,9 @@ from new_dataloader import DataLoader
 
 data = pd.read_csv('../tests/data/MNIST.csv')
 
+
+
+
 data = np.array(data)
 m, n = data.shape
 np.random.shuffle(data) # shuffle before splitting into dev and training sets
@@ -60,7 +63,7 @@ print(f'length of training data: {len(train_data)}')
 # print(train_data)
 # print(test_data)
 
-train_loader = DataLoader(dataset=train_data, batch_size=32, shuffle=True)
+train_loader = DataLoader(dataset=train_data, batch_size=60000, shuffle=True)
 test_loader = DataLoader(dataset=test_data, batch_size=32, shuffle=True)
 
 # for i,(x, y) in enumerate(train_loader):
@@ -98,16 +101,16 @@ for _ in range(500):
         # print(x)
         y=y_wannabe
         # print(f'one batch x shape: {x.shape}, y shape: {y.shape}')
-        optimizer.zero_grad()
-        y_hat = model(x)
-        loss = loss_fn(y, y_hat)
-        loss.backward()
-        optimizer.step()
-    if _ % 100 == 0:
-        print(f'epoch: {_}')    
-        print(f'Loss: {loss.data}') 
-        predictions = np.argmax(y_hat.data, axis=0)
-        accuracy = np.sum(predictions == y.data) / y.data.size
-        print(predictions, y.data)
-        print(f'Accuracy: {accuracy * 100:.2f}%')
+    #     optimizer.zero_grad()
+    #     y_hat = model(x)
+    #     loss = loss_fn(y, y_hat)
+    #     loss.backward()
+    #     optimizer.step()
+    # if _ % 100 == 0:
+    #     print(f'epoch: {_}')    
+    #     print(f'Loss: {loss.data}') 
+    #     predictions = np.argmax(y_hat.data, axis=0)
+    #     accuracy = np.sum(predictions == y.data) / y.data.size
+    #     print(predictions, y.data)
+    #     print(f'Accuracy: {accuracy * 100:.2f}%')
     

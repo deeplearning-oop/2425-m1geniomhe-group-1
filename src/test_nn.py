@@ -35,7 +35,7 @@ for epoch in range(3):
     print(f'epoch: {epoch+1} started')
     for batch in dataloader:
         x, y = zip(*batch)
-        x = Tensor(np.array([img.numpy().flatten() for img in x]).T / 255, requires_grad=False) # Normalize input
+        x = Tensor(np.array([img.numpy().flatten() for img in x]).T , requires_grad=False) # Normalize input
         y = Tensor(np.array(y), requires_grad=False)  
         # y = Tensor(np.eye(10)[np.array(y)], requires_grad=False)  # One-hot encode labels
 
@@ -64,7 +64,7 @@ total = 0
 predictions_list = []
 for batch in dataloader:
     x, y = zip(*batch)
-    x = Tensor(np.array([img.numpy().flatten() for img in x]).T / 255, requires_grad=False)  # Normalize input
+    x = Tensor(np.array([img.numpy().flatten() for img in x]).T, requires_grad=False)  # Normalize input
     y = np.array(y)
     
     y_hat = model(x)
