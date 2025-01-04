@@ -104,16 +104,16 @@ def url_to_gunzipped_file(url, path):
     }
 
     if filepath.exists():
-        print(f'{filepath} already exists')
+        print(f' >>> {filepath} already exists <<<')
     else:
         try:
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 with open(filepath, "wb") as f:
                     f.write(response.content)
-                print(f"File downloaded successfully as '{filepath}'.")
+                print(f" >>> File downloaded successfully as '{filepath}'.")
             else:
-                print(f"Failed to download file. Status code: {response.status_code}")
+                print(f" >>> Failed to download file. Status code: {response.status_code}")
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -122,7 +122,7 @@ def url_to_gunzipped_file(url, path):
 
 
     if filepath_no_gz.exists():
-        print(f'{filepath_no_gz} already exists')
+        print(f' >>> {filepath_no_gz} already exists <<<')
     else:
         with open(filepath, 'rb') as f:
             file_content = f.read()
@@ -344,8 +344,14 @@ class MNIST(Dataset):
             labels=read_idx(self.__raw/'t10k-labels-idx1-ubyte')
 
         # -- transformation can be held in __setattr__ to account for the case where none is given
-        self.__data=Tensor(data) if transform is None else transform(Tensor(data))
-        self.__targets=Tensor(labels) if target_transform is None else target_transform(Tensor(data))
+        self.__data=Tensor(data)
+        self.__targets=Tensor(labels) 
+        
+        # -- inplace transformation
+        if self.__transform is not None:
+            self.__transform(self.__data)
+        if self.__target_transform is not None:
+            self.__target_transform(self.__targets)
 
 
 
