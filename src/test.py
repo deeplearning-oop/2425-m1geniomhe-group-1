@@ -5,13 +5,13 @@ from module import Module
 from linear import Linear
 from optimizer import SGD
 from loss import CrossEntropyLoss, MSE
-from dataset import MNIST
-from dataloader import DataLoader
-from transformer import get_transform
+# from dataset import MNIST
+# from dataloader import DataLoader
+# from transformer import get_transform
 from tensor import Tensor
 import numpy as np
 
-data = pd.read_csv('train.csv')
+data = pd.read_csv('../tests/data/MNIST.csv')
 
 data = np.array(data)
 m, n = data.shape
