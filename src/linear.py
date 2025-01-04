@@ -10,7 +10,7 @@ class Linear(Module):
         self.output_size=output_size
         self.weights=Parameter(np.random.rand(output_size, input_size)-0.5) #initialize weights (as type Parameter) to random values centered around 0
         self.bias=Parameter(np.zeros((output_size,1))) #initialize bias (as type Parameter) to 0
-        
+
     
     @property  
     def input_size(self):
@@ -38,7 +38,8 @@ class Linear(Module):
         self.__output_size = output_size
         
         
-    def forward(self, x): #applies affine linear transformation 
+    def forward(self, x): #applies affine linear transformation
+        # print(f'TROUBLSHOOTING: shapes of W {self.weights.shape} and x {x.shape} and bias {self.bias.shape}') 
         return self.weights @ x + self.bias
     
         

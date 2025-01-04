@@ -15,6 +15,7 @@ class Linear(Module):
         return np.random.rand(*shape) - 0.5 #centered around 0
     
     def forward(self, x):
+        print(f'TROUBLSHOOTING: shapes of W {self.weights.shape} and x {x.shape} and bias {self.bias.shape}') 
         return self.weights @ x + self.bias
     
     def __repr__(self):

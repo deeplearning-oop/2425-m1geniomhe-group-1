@@ -24,8 +24,8 @@ test_loader = DataLoader(dataset=test_data, batch_size=32, shuffle=True)
 class Model(Module):
     def __init__(self):
         super().__init__()
-        self.linear1 = Linear(20, 28*28)
-        self.linear2 = Linear(10, 20)
+        self.linear1 = Linear(28*28,20)
+        self.linear2 = Linear(20,10)
 
     def forward(self, x):
         x = self.linear1(x)
