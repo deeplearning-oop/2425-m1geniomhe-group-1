@@ -10,6 +10,8 @@ class Loss(Module):
         raise NotImplementedError
     def __call__(self, y, y_hat):
         return self.loss_fn(y, y_hat)
+    def forward(self, y, y_hat): #implementing the forward method because it inherits the abstract class Module
+        return self.loss_fn(y, y_hat)
 
 class MSE(Loss):
     def loss_fn(self, y, y_hat):
