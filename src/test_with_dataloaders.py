@@ -42,6 +42,7 @@ loss_fn = CrossEntropyLoss()
 for epoch in range(5):
     for batch_no,(x, y) in enumerate(train_loader):
         x=x.flatten_batch()
+        x=x
         optimizer.zero_grad()
         y_hat = model(x)
         loss = loss_fn(y, y_hat)
