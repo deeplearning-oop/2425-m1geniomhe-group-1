@@ -35,9 +35,9 @@ class Model(Module):
     def _init_(self):
         super()._init_()
         self.linear1 = Linear(28*28, 20)
-        # self.relu= ReLU()
+        self.relu= ReLU()
         self.linear2 = Linear(20, 10)
-        # self.softmax=Softmax()
+        self.softmax=Softmax()
         
     def forward(self, x):
         x = self.linear1(x)    

@@ -14,7 +14,20 @@ class Module(ABC):
         if isinstance(value, Parameter): 
             self._parameters[name]=value
         super().__setattr__(name, value)
-        
+
+    def __getattr__(self, name):
+        if "_parameters" in self.__dict__:
+            _parameters = self.__dict__["_parameters"]
+            if name in _parameters:
+                return _parameters[name]
+            
+        if "_modules" in self.__dict__:
+            modules = self.__dict__["_modules"]
+            if name in modules:
+                return modules[name]
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
         
     def parameters(self): #to be called through model.parameters()
         '''
