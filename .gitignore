@@ -4,7 +4,7 @@ tests/*
 !tests/assets/
 !tests/notebooks
 tests/notebooks/data
-
+tests/modules/data
 
 TODO.md
 .gitignore

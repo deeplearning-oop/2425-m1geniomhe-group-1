@@ -9,7 +9,7 @@ seed=42
 random.seed(seed)
 
 from tensor import *
-from new_dataset import *
+from dataset import *
 
 class DataLoader:
     '''DataLoader class
