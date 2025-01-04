@@ -200,16 +200,17 @@ class Tensor:
 
         if self.requires_grad:
             def _backward(grad):
-
+                alpha=0
                 # Compute softmax of the input
                 # softmax = exps / sum_exps  # Compute softmax
                 # Gradient of log-softmax
                 # grad_input = grad - np.sum(grad, axis=-1, keepdims=True) * softmax  # Backpropagate
+                grad = np.outer(result, result) - np.diag(result)
 
                 if self.grad is None:
                     self.grad = grad  # Initialize grad if it's None
                 else:
-                    self.grad = grad  # Accumulate gradients if grad already exists
+                    self.grad += grad  # Accumulate gradients if grad already exists
 
                 return grad  # Return gradient input for the next layer
 
