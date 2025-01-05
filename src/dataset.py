@@ -246,9 +246,12 @@ class Dataset(ABC):
 
 #     '''
 #     def __init__(self, X, y, transform=None, target_transform=None):
-#         super().__init__(transform=transform, target_transform=target_transform)
+#         super().__init__(transform=transform, 
+#                         target_transform=target_transform)
 #         self.__data=X
 #         self.__targets=y
+#         self.__root='data'
+
 
 
 #     # -- getters and setters --
