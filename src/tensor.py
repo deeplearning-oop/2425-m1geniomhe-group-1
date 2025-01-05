@@ -253,6 +253,7 @@ class Tensor:
 
             # If this tensor has a backward function, then call it
             if tensor.grad_fn is not None:
+                # print(f"Backpropagating through {tensor.grad_fn_name} function")
                 # Pass the gradient to the parent tensors
                 tensor.grad_fn(tensor.grad)
                 # Add the parents of this tensor to the stack for backpropagation
