@@ -39,6 +39,11 @@ from IPython.display import display
 from tensor import Tensor
 
 
+# def validate_path(path:str):
+#     '''takes a path, if not present creates it'''
+
+
+
 def image_to_ndarray(image_path,grey=False):
     '''
     takes an image path and transforms it inot a numpy array 
@@ -201,7 +206,7 @@ class Dataset(ABC):
 
     the callable transforms are Transform ojects that are callable :)
     '''
-    def __init__(self, root='data/',data, targets, transform=None, target_transform=None):
+    def __init__(self, root,data, targets, transform=None, target_transform=None):
         self.__data=data
         self.__targets=targets
         self.__root=Path(root)
