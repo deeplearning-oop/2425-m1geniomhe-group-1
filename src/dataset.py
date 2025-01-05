@@ -2,7 +2,24 @@
 Dataset module
 ---------------
 
-This module contains implementation of class Dataset which is used to load and preprocess example datasets like MNIST
+This module contains implementation of class Dataset which is used to load and preprocess example datasets like MNIST  
+Hence, contains implementation of children classes like MNIST
+
+Some useful functiosn are also implemented here or imported from transform like:  
+* image_to_ndarray: (path, grey=False) -> np.ndarray
+* image_to_tensor: (path, grey=False) -> Tensor  
+* viz_ndarray: (Union(np.ndarray, Tensor), label=None, squeeze=False) -> None   
+* url_to_gunzipped_file: (url, path)-> None    
+* read_idx: (file_path) -> np.ndarray  
+* beautify_repr: (obj:dataset.Dataset) -> None
+
+These helpers are in here because by default behavior of MNIST in pytorch is to download the dataset, store it and gets it directly in tensor form with dtype=torch.uint8  
+We are imitating thus the same behavior by downloading, storing and reading images in idx format and transforming them into np arrays of type uint8 then storing them in Tensor objects
+
+Classes:  
+* Dataset: (ABC)  
+    * MNIST: (Dataset)  
+
 
 '''
 
@@ -19,7 +36,7 @@ import gzip
 import requests
 from IPython.display import display
 
-import tensor 
+from tensor import Tensor
 
 
 def image_to_ndarray(image_path,grey=False):
@@ -49,7 +66,7 @@ def image_to_tensor(image_path, grey=False):
     :D successful test :D
     '''
     pixels=image_to_ndarray(image_path, grey=grey)
-    return tensor.Tensor(pixels)
+    return Tensor(pixels)
 
 def viz_ndarray(ndarray, label=None, squeeze=False):
     '''
@@ -62,7 +79,7 @@ def viz_ndarray(ndarray, label=None, squeeze=False):
 
     returns: None
     '''
-    if type(ndarray)==tensor.Tensor:
+    if type(ndarray)==Tensor:
         ndarray=ndarray.data #getting data as tensor
 
     if squeeze:
@@ -72,7 +89,7 @@ def viz_ndarray(ndarray, label=None, squeeze=False):
     plt.xticks([])
     plt.yticks([])
     if label:
-        plt.title(label)
+        plt.title(f'label: {label}')
     plt.show()
 
 def url_to_gunzipped_file(url, path):
@@ -87,16 +104,16 @@ def url_to_gunzipped_file(url, path):
     }
 
     if filepath.exists():
-        print(f'{filepath} already exists')
+        print(f' >>> {filepath} already exists <<<')
     else:
         try:
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 with open(filepath, "wb") as f:
                     f.write(response.content)
-                print(f"File downloaded successfully as '{filepath}'.")
+                print(f" >>> File downloaded successfully as '{filepath}'.")
             else:
-                print(f"Failed to download file. Status code: {response.status_code}")
+                print(f" >>> Failed to download file. Status code: {response.status_code}")
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -105,7 +122,7 @@ def url_to_gunzipped_file(url, path):
 
 
     if filepath_no_gz.exists():
-        print(f'{filepath_no_gz} already exists')
+        print(f' >>> {filepath_no_gz} already exists <<<')
     else:
         with open(filepath, 'rb') as f:
             file_content = f.read()
@@ -174,14 +191,18 @@ class Dataset(ABC):
     Most important thing is that it enforces all its children to have these abstract methods:   
     * __getitem__  
     * __len__  
+
+    Attributes:  
+    * root: Path/str (default='data/')  
+    * transform: callable (default=None)   
+    * target_transform: callable (default=None)  
+
+    the callable transforms are Transform ojects that are callable :)
     '''
     def __init__(self, root='data/', transform=None, target_transform=None):
         self.__root=Path(root)
         self.__transform=transform
         self.__target_transform=target_transform
-        
-    # def __len__(self):
-    #     raise NotImplementedError
 
     @abstractmethod
     def __getitem__(self,index):
@@ -224,7 +245,7 @@ class Dataset(ABC):
 #     @property
 #     def data(self):
 #         return self.__data
-#     @X.setter
+#     @data.setter
 #     def data(self, value):
 #         self.__data=value
     
@@ -260,7 +281,27 @@ class MNIST(Dataset):
     ------------------------------
     ~ https://yann.lecun.com/exdb/mnist/
 
-    we will use this mirror: ossci-datasets.s3.amazonaws.com
+    we will use this mirror: ossci-datasets.s3.amazonaws.com because it's the only one working  
+
+    Attributes:  
+        * url: str, url of the dataset CLASS attribute
+        * sets: set, names of the files in the dataset CLASS attribute   
+        * sources: set, urls of the files in the dataset CLASS attribute  
+        * root: Path, root directory to store the dataset  
+        * raw: Path, directory to store the raw dataset files  (derived from root)
+        * download: bool, default=True, download the dataset files (if not present in root/raw directory will raise an error if set to False)
+        * data: Tensor, data points  
+        * targets: Tensor, target labels  
+        * train: bool, default=True  (set train to False to get the test set)
+        * transform: callable, default=None  
+        * target_transform: callable, default=None  
+
+    Methods:
+        * download: () -> None, downloads the dataset files from the urls in sources  
+        * __len__: () -> int, returns number of data points  
+        * __iter__: () -> tuple(Tensor, int), yields a tuple of data and target
+        * __getitem__: (index) -> tuple(Tensor, int), returns a tuple of data and target  
+        * __repr__: () -> None, prints the dataset object in a nice way  
     '''
 
     url = 'https://ossci-datasets.s3.amazonaws.com/mnist/'  
@@ -284,22 +325,35 @@ class MNIST(Dataset):
         self.__root=Path(root)/'MNIST'
         self.__raw=self.__root/'raw'
 
+        # -- these are assigned first as they're needed to define data and target
+        self.__transform=transform
+        self.__target_transform=target_transform
+
         if download:
             self.download()
 
         self.__train=train
+
         if self.__train:
+            # -- load the training set
             data=read_idx(self.__raw/'train-images-idx3-ubyte')
             labels=read_idx(self.__raw/'train-labels-idx1-ubyte')
         else:
+            # -- load the testing set
             data=read_idx(self.__raw/'t10k-images-idx3-ubyte')
             labels=read_idx(self.__raw/'t10k-labels-idx1-ubyte')
 
-        self.__data=tensor.Tensor(data) #need to make dtype as uint8
-        self.__targets=tensor.Tensor(labels) #same
+        # -- transformation can be held in __setattr__ to account for the case where none is given
+        self.__data=Tensor(data)
+        self.__targets=Tensor(labels) 
+        
+        # -- inplace transformation
+        if self.__transform is not None:
+            self.__transform(self.__data)
+        if self.__target_transform is not None:
+            self.__target_transform(self.__targets)
 
-        self.__transform=transform
-        self.__target_transform=target_transform
+
 
     # -- getters and setters --
     @property
@@ -372,7 +426,7 @@ class MNIST(Dataset):
 
             data=self.__data[index]
             data = np.expand_dims(data, axis=0)
-            tensor_data=tensor.Tensor(data)
+            tensor_data=Tensor(data)
             target=self.__targets[index]
             
             yield tensor_data, int(target)
@@ -392,7 +446,7 @@ class MNIST(Dataset):
             print(f'data slice item shape: {data_slice[0].shape} of length {len(data_slice)}')
             print(f'data list shape: shape: {data_list[0].shape} of length {len(data_list)}')
             
-            tensor_data_list = [tensor.Tensor(datapoint) for datapoint in data_list]
+            tensor_data_list = [Tensor(datapoint) for datapoint in data_list]
             target_list = [target for target in targets_slice]
             
             return list(zip(tensor_data_list, target_list))
@@ -400,7 +454,7 @@ class MNIST(Dataset):
             data=self.__data[index]
             
             data = np.expand_dims(data, axis=0) # -- adding a dimension to make it (1, 28, 28) instead of (28, 28)
-            tensor_data=tensor.Tensor(data)
+            tensor_data=Tensor(data)
             target=self.__targets[index]
 
             # viz_ndarray(data, label=target, squeeze=True)
@@ -411,9 +465,9 @@ class MNIST(Dataset):
         return super().__repr__()
     
     
-# for testing
-from torchvision import datasets  
-import torch      
+# -- for testing
+# from torchvision import datasets  
+# import torch      
 
 # if __name__=='__main__':
 #     my_train_data=MNIST(root='data',train=True)
