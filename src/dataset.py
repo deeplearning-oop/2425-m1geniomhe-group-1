@@ -194,15 +194,20 @@ class Dataset(ABC):
 
     Attributes:  
     * root: Path/str (default='data/')  
+    * data: Tensor
+    * targets: Tensor
     * transform: callable (default=None)   
     * target_transform: callable (default=None)  
 
     the callable transforms are Transform ojects that are callable :)
     '''
-    def __init__(self, root='data/', transform=None, target_transform=None):
+    def __init__(self, root='data/',data, targets, transform=None, target_transform=None):
+        self.__data=data
+        self.__targets=targets
         self.__root=Path(root)
         self.__transform=transform
         self.__target_transform=target_transform
+
 
     @abstractmethod
     def __getitem__(self,index):
@@ -287,6 +292,7 @@ class MNIST(Dataset):
         * url: str, url of the dataset CLASS attribute
         * sets: set, names of the files in the dataset CLASS attribute   
         * sources: set, urls of the files in the dataset CLASS attribute  
+        
         * root: Path, root directory to store the dataset  
         * raw: Path, directory to store the raw dataset files  (derived from root)
         * download: bool, default=True, download the dataset files (if not present in root/raw directory will raise an error if set to False)
