@@ -1,6 +1,6 @@
 # Computation Graph
 
-In our library, the computation graph is implicitly constructed by storing the parents of all operation outputs along with the operation that led to them and its corresponding derivation formula. 
+In our library, the computation graph is implicitly constructed by storing the parents of the outputs of all operations along with name of the operation that led to them and its corresponding derivation formula. 
 
 ## Forward Pass & Graph Construction
 
