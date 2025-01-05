@@ -71,7 +71,7 @@ Yazid
 
 To have this user interface, we implemented:
 
-### `_Enum_ class DataType`
+### _Enum_ `class DataType`
 
 This is an _Enum_ class, belonging to module `tensor.py`. It is used to define the data types of the tensor while allowing to restrict the possible values to a set of predefined ones. In addition it performs easy conversion of the data types to numpy data types.  
 
@@ -83,7 +83,7 @@ It has 5 values for now:
 * `float32`
 * `uint8
 
-> uint8 is used for images, and is basically a byte. It is used to represent pixel values in images, great memory saver. Also by default in teh first step of processign images the pixels are converted to uint8.
+> uint8 is used for images, and is basically a byte. It is used to represent pixel values in images, great memory saver. Also by default in the first step of processign images the pixels are converted to uint8.
 
 Each $DataType$ object has a string representation and can be accessed by it through:  
 
@@ -226,7 +226,7 @@ Magic methods:
 | `__repr__`   | Returns a string representation of the dataset, showing the number of samples and the shape of the images (super()). |
 
 Very important note considering the `__getitem__` method:  
-AS is behaved by pytorch, for teh training dataset where there exist `60000` training images of dimensions `28x28`, data will be a tensor of shape `(60000, 28, 28)`, however, while accessing each point, it should be of shape `(1, 28, 28)` as in pytorch, which doesnt match the default behavior. This is why we require to expand dimensions in order to match with torch's UI.
+AS is behaved by pytorch, for the training dataset where there exist `60000` training images of dimensions `28x28`, data will be a tensor of shape `(60000, 28, 28)`, however, while accessing each point, it should be of shape `(1, 28, 28)` as in pytorch, which doesnt match the default behavior. This is why we require to expand dimensions in order to match with torch's UI.
 
 
 ##### TensorDataset
@@ -286,7 +286,7 @@ In Dataset initialization, there are 2 types of transformations:
     In both cases, we need to provide of the Tranformer callable classes to be applied to the dataset.  
         <!> if several transformations are needed, `Compose` becomes handy to chain them together.
 
-Thus, for all possibel tranformations tehre will be a parent class `Transform` (abstract) that ensures the `__call__` magic method is implemented in all its children
+Thus, for all possibel tranformations there will be a parent class `Transform` (abstract) that ensures the `__call__` magic method is implemented in all its children
 
 Possibly most useful transformations to consider:
     - `ToTensor`: Converts the input data to a tensor, this can be a combination of different transformations (image-> tensor or numpy array -> tensor)
