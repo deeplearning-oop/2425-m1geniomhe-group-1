@@ -36,7 +36,12 @@ import gzip
 import requests
 from IPython.display import display
 
-from tensor import Tensor
+from tensor import Tensor, tensor
+
+
+# def validate_path(path:str):
+#     '''takes a path, if not present creates it'''
+
 
 
 def image_to_ndarray(image_path,grey=False):
@@ -160,14 +165,16 @@ def beautify_repr(obj):
         takes a dataset object and returns a dictionary of its attributes
 
         '''
-        return {
-            'data dimensions': dataset.data.shape, #can change it to len when implemented
-            'data points': dataset.data.shape[0],
-            'split': 'train' if dataset.train else 'test',
-            # 'root directory holding data': dataset.__root,
-            'transform': dataset.transform,
-            'target transform': dataset.target_transform
-        }
+        data=dataset.__dict__
+        # -- if one of them is nd_array or tensor, we'll convert it to a list
+        for key,val in data.items():
+            if isinstance(val, np.ndarray):
+                data[key]=val.tolist()
+            if isinstance(val, Tensor):
+                data[key]=val.data.tolist()
+        # removes the private attributes
+        data={key:val for key,val in data.items() if not key.startswith('_')}
+        return data
 
     def dfy_data(data):
         '''
@@ -190,19 +197,35 @@ class Dataset(ABC):
     This class provides a blueprint for all datasets that will be used in the project    
     Most important thing is that it enforces all its children to have these abstract methods:   
     * __getitem__  
-    * __len__  
+    * __len__   
+    Moreover, it enforces all children to have data and targets attributes by setting their property decorator to abstractmethods
 
-    Attributes:  
+    Attributes: 
+    * data: Tensor
+    * targets: Tensor 
     * root: Path/str (default='data/')  
     * transform: callable (default=None)   
     * target_transform: callable (default=None)  
 
     the callable transforms are Transform ojects that are callable :)
     '''
-    def __init__(self, root='data/', transform=None, target_transform=None):
-        self.__root=Path(root)
+    def __init__(self, root=None, transform=None, target_transform=None):
+        self.__root=Path(root) if root else None
         self.__transform=transform
         self.__target_transform=target_transform
+
+    @property
+    @abstractmethod
+    def data(self):
+        """Abstract property for data. Must be implemented by child class."""
+        pass
+
+    @property
+    @abstractmethod
+    def targets(self):
+        """Abstract property for targets. Must be implemented by child class."""
+        pass
+
 
     @abstractmethod
     def __getitem__(self,index):
@@ -221,57 +244,84 @@ class Dataset(ABC):
     target_transform: {self.__target_transform} 
 )'''
 
-# class TensorDataset(Dataset):
-#     '''Class to create a dataset from tensors
-#     ---------------------------------------
+class TensorDataset(Dataset):
+    '''Class to create a dataset from tensors
+    ---------------------------------------
 
-#     Having X and y tensors, this class will create a dataset object that can be used for training or testing    
-#         <!> each instance is either training or testing dataset
+    Having X and y tensors, this class will create a dataset object that can be used for training or testing    
+        <!> each instance is either training or testing dataset
     
-#     It takes:  
-#     * X: tensor (data)  
-#     * y: tensor (target) 
-#     * transform: callable (optional)  
-#     * target_transform: callable (optional)   
+    It takes:  
+    * X: tensor (data)  
+    * y: tensor (target) 
+    * transform: callable (optional)  
+    * target_transform: callable (optional)   
 
-#     '''
-#     def __init__(self, X, y, transform=None, target_transform=None):
-#         super().__init__(transform=transform, target_transform=target_transform)
-#         self.__data=X
-#         self.__targets=y
+    '''
+    def __init__(self, X, y, transform=None, target_transform=None):
+        super().__init__(root=None,transform=transform, 
+                        target_transform=target_transform)
+        self.__data=X if isinstance(X, Tensor) else Tensor(X)
+        self.__targets=y if isinstance(y, Tensor) else Tensor(y)
+        self.__transform=transform
+        self.__target_transform=target_transform
+        # self.__root=None
+
+        # self.__data=Tensor(X)
+        # self.__targets=Tensor(y) 
+
+        # -- inplace transformation
+        if self.__transform is not None:
+            self.__transform(self.__data)
+        if self.__target_transform is not None:
+            self.__target_transform(self.__targets)
 
 
-#     # -- getters and setters --
-#     @property
-#     def data(self):
-#         return self.__data
-#     @data.setter
-#     def data(self, value):
-#         self.__data=value
+
+    # -- getters and setters --
+    @property
+    def data(self):
+        return self.__data
+    @data.setter
+    def data(self, value):
+        self.__data=value
     
-#     @property
-#     def targets(self):
-#         return self.__targets
-#     def targets(self, value):
-#         self.__targets=value
+    @property
+    def targets(self):
+        return self.__targets
+    def targets(self, value):
+        self.__targets=value
 
-#     def __len__(self):
-#         '''abstract method implementation: len() -> returns number of data points'''
-#         return self.__y.shape[0]
-    
-#     def __getitem__(self, index):
-#         '''abstract method implementation: dataset[i] -> returns a tuple of data (tensor) and target (int)'''
-#         return self.__data[index], self.__targets[index]
+    @property
+    def transform(self):
+        return self.__transform
+    @transform.setter
+    def transform(self,value):
+        self.__transform=value
+    @property
+    def target_transform(self):
+        return self.__target_transform
+    @target_transform.setter
+    def target_transform(self,value):
+        self.__target_transform=value
 
-#     def __iter__(self):
-#         '''
-#         maybe not necessary for this class, but to avoid potential errors if iterability doesnt come from __getitem__ method
-#         '''
-#         for index in range(len(self)):
-#             yield self[index]
+    def __len__(self):
+        '''abstract method implementation: len() -> returns number of data points'''
+        return len(self.__targets)
     
-#     def __repr__(self):
-#         return super().__repr__()
+    def __getitem__(self, index):
+        '''abstract method implementation: dataset[i] -> returns a tuple of data (tensor) and target (int)'''
+        return self.__data[index], self.__targets[index]
+
+    def __iter__(self):
+        '''
+        maybe not necessary for this class, but to avoid potential errors if iterability doesnt come from __getitem__ method
+        '''
+        for index in range(len(self)):
+            yield self[index]
+    
+    def __repr__(self):
+        return super().__repr__()
 
     
 
@@ -287,6 +337,7 @@ class MNIST(Dataset):
         * url: str, url of the dataset CLASS attribute
         * sets: set, names of the files in the dataset CLASS attribute   
         * sources: set, urls of the files in the dataset CLASS attribute  
+        
         * root: Path, root directory to store the dataset  
         * raw: Path, directory to store the raw dataset files  (derived from root)
         * download: bool, default=True, download the dataset files (if not present in root/raw directory will raise an error if set to False)
@@ -346,6 +397,7 @@ class MNIST(Dataset):
         # -- transformation can be held in __setattr__ to account for the case where none is given
         self.__data=Tensor(data)
         self.__targets=Tensor(labels) 
+        
         
         # -- inplace transformation
         if self.__transform is not None:
@@ -469,11 +521,22 @@ class MNIST(Dataset):
 # from torchvision import datasets  
 # import torch      
 
-# if __name__=='__main__':
-#     my_train_data=MNIST(root='data',train=True)
-#     my_train_ndarray=my_train_data.data.data
-#     my_train_in_tensor=torch.tensor(my_train_ndarray)
-#     torch_train_data=datasets.MNIST(root='data',train=True,download=True)
-#     print(type(torch_train_data.data))
-#     print(torch.all(my_train_in_tensor==torch_train_data.data))
-#     # tensor(True)
+if __name__=='__main__':
+
+    x=tensor([[1,2,3],[4,5,6]])
+    y=tensor([1,0])
+
+    my_dataset=TensorDataset(X=x, y=y)
+    print(my_dataset)
+    for i,j in my_dataset:
+        print(i,j)
+
+    print('####################################')
+
+    # my_train_data=MNIST(root='data',train=True)
+    # my_train_ndarray=my_train_data.data.data
+    # my_train_in_tensor=torch.tensor(my_train_ndarray)
+    # torch_train_data=datasets.MNIST(root='data',train=True,download=True)
+    # print(type(torch_train_data.data))
+    # print(torch.all(my_train_in_tensor==torch_train_data.data))
+    # # tensor(True)

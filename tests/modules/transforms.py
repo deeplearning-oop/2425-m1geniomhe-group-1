@@ -11,6 +11,8 @@ In Dataset initialization, there are 2 types of transformations:
     In both cases, we need to provide of the Tranformer callable classes to be applied to the dataset.  
         <!> if several transformations are needed, `Compose` becomes handy to chain them together.
 
+Thus, for all possibel tranformations tehre will be a parent class `Transform` (abstract) that ensures the `__call__` magic method is implemented in all its children
+
 Possibly most useful transformations to consider:
     - `ToTensor`: Converts the input data to a tensor, this can be a combination of different transformations (image-> tensor or numpy array -> tensor)
     - `Normalize`: Normalize the input data, given a tensor -> returns a tensor    
@@ -30,8 +32,8 @@ This module contains the following CALLABLE classes:
 '''
 
 import numpy as np
-import cv2
-import PIL
+import cv2, PIL
+from abc import ABC, abstractmethod
 from tensor import Tensor
 
 valid_transforms = ['ToTensor', 'Normalize', 'Standardize', 'MinMaxNormalize', 'Compose']
@@ -137,7 +139,22 @@ def min_max_normalize_tensor(tensor, min, max):
     normalized_tensor=Tensor(normalized_array)
     return normalized_tensor
 
-class Compose:
+class Transform(ABC):
+    '''
+    ------------------------------
+    Transform parent class:  
+    -------------------------------
+
+    this abstract class ensures all children implement the __call__ methods
+    '''
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def __call__(self, input):
+        pass
+
+class Compose(Transform):
     '''
     ------------------------------
     Compose transformer class:  
@@ -217,7 +234,7 @@ class Compose:
         return f'Transformations: {self.__transforms}'
 
     
-class ToTensor:
+class ToTensor(Transform):
     '''
     ------------------------------
     ToTensor transformer class:
@@ -276,7 +293,7 @@ class ToTensor:
         return 'ToTensor()'
     
     
-class Normalize:
+class Normalize(Transform):
     '''
     ------------------------------
     Normalize transform class:
@@ -350,11 +367,7 @@ class Standardize(Normalize):
         return f'Standardize(inplace={self.inplace})'
     
     def __call__(self, tensor_input):
-        t= standardize_tensor(tensor_input)
-        if self.inplace:
-            tensor_input.data = t.data
-            return tensor_input
-        return t
+        super().__call__(tensor_input)
 
     
 class MinMaxNormalize:
