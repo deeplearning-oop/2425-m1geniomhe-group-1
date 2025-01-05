@@ -11,7 +11,7 @@ With the execution of forward through `y_hat = model(x)`, multiple linear steps 
 x = self.linear1(x)
 x = x.relu()
 x = self.linear2(x)
-return x.softmax()
+x = x.softmax()
 ```
 Each step involves one or more basic operations. For instance, `self.linear1(x)` consists of x@weights and (x@weights)+bias. For each operation, the parents, operation name, and corresponding grad function will be stored in the output. Thus, by the end of the forward propagation, we can trace y_hat as the softmax output of its predecessor, which is the output of the addition of the biases of linear2 and (x@weights2), and so on to the beginning. This gives rise to a conceptual computation graph representation storing all primitive steps of the forward propagation, as well as the gradient functions needed for the backward propagation later on. 
 
