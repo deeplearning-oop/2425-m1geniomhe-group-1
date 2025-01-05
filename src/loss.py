@@ -53,6 +53,18 @@ class Loss(Module):
             grad_input = -(y.data / y_hat.data) + (1 - y.data) / (1 - y_hat.data)
             grad_input /= y.data.size
         
+        elif loss_type == "NegativeLogLikelihoodLoss":
+            # Adding epsilon to avoid division by zero
+            epsilon = 1e-15
+            y_pred = np.clip(y_hat.data, epsilon, 1 - epsilon)
+
+            batch_size = y.data.size
+            grad_input = np.zeros_like(y_hat.data)
+
+            # For each sample, set the gradient of the true class to -1 / p(y_true)
+            grad_input[np.arange(batch_size), y.data] = -1 / y_pred[np.arange(batch_size), y.data]
+            grad_input /= batch_size
+        
         y_hat.grad = grad_input if y_hat.grad is None else y_hat.grad + grad_input
 
         # Add more loss functions here if needed
@@ -212,3 +224,27 @@ class BinaryCrossEntropyLoss(Loss):
 
     def __repr__(self):
         return "BinaryCrossEntropyLoss()"
+    
+class NegativeLogLikelihoodLoss(Loss):
+    @Loss.backward_decorator("NegativeLogLikelihoodLoss")
+    def forward(self, y, y_hat):
+        """
+        y: Tensor of shape (batch_size,) (target labels - integer class labels)
+        y_hat: Tensor of shape (batch_size, num_classes) (predicted class probabilities)
+        """
+        # Adding epsilon to avoid log(0)
+        epsilon = 1e-15
+        y_pred = np.clip(y_hat.data, epsilon, 1 - epsilon)
+
+        # The true labels are in integer form, so we use the correct class probabilities
+        batch_size = y.data.size
+        correct_class_probs = y_pred[np.arange(batch_size), y.data]
+
+        # Negative Log-Likelihood loss
+        loss = -np.sum(np.log(correct_class_probs)) / batch_size
+        
+        return Tensor(loss, requires_grad=True, is_leaf=False)
+
+    def __repr__(self):
+        return "NegativeLogLikelihoodLoss()"
+
