@@ -108,12 +108,12 @@ from tensor import Tensor
 from dataset import TensorDataset
 from module import Module
 from linear import Linear
-from activation import ReLU, Softmax
-from loss import CrossEntropyLoss,MSE
+from activation import ReLU, Softmax, Sigmoid
+from loss import CrossEntropyLoss,MSE, BinaryCrossEntropyLoss
 from optimizer import SGD
 from transforms import Standardize, ToTensor, Compose
 
-X, y = generate_data(choice='spiral', n_samples=500, noise=0.1)
+X, y = generate_data(choice='linear', n_samples=520, noise=0.1)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # -- testing if it workd on ndarray
@@ -137,33 +137,35 @@ from dataloader import DataLoader
 train_loader=DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader=DataLoader(test_dataset, batch_size=32, shuffle=True)
 
-for batch,(i,j) in enumerate(train_loader):
-    print(f'batch {batch} data shape {i.shape}; labels shape {j.shape}')
+# for batch,(i,j) in enumerate(train_loader):
+#     print(f'batch {batch} data shape {i.shape}; labels shape {j.shape}')
 
 class SimpleNN(Module):
     def __init__(self):
         super().__init__()
-        self.fc1=Linear(2, 3)
-        self.fc2=Linear(3, 1)
-        self.soft=Softmax()
+        self.fc1=Linear(2, 2)
+        self.relu=ReLU()
+        self.fc2=Linear(2, 1)
+        self.sigmoid=Sigmoid()
 
     def forward(self, x):
         x=self.fc1(x)
-        x=self.soft(x)
+        x=self.relu(x)
         x=self.fc2(x)
-        return x
+        return self.sigmoid(x)
     
 model = SimpleNN()
-optimizer = SGD(model.parameters(), lr=0.01)
-loss_fn = CrossEntropyLoss()
+optimizer = SGD(model.parameters(), lr=0.1)
+loss_fn = BinaryCrossEntropyLoss()
 
 # -- training
-for epoch in range(500):
+for epoch in range(10):
     for batch_no,(x, y) in enumerate(train_loader):
         x.flatten_batch() #or just transpose, can do x.T now
         # print(f'x shape: {x.shape}, y shape: {y.shape}')
         optimizer.zero_grad()
         y_hat = model(x)
+        print(y_hat)
         loss = loss_fn(y, y_hat)
         loss.backward()
         optimizer.step()
@@ -171,7 +173,8 @@ for epoch in range(500):
 
     print(f'iteration: {epoch}')    
     print(f'Loss: {loss.data}') 
-    predictions = np.argmax(y_hat.data, axis=0)
+    # predictions = np.argmax(y_hat.data, axis=0)
+    predictions = (y_hat.data >= 0.5).astype(int)
     accuracy = np.sum(predictions == y.data) / y.data.size
     print(predictions, y.data)
     print(f'Accuracy: {accuracy * 100:.2f}%')

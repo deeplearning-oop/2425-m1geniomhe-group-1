@@ -43,12 +43,12 @@ class Model(Module):
         return self.softmax(x)
     
 model = Model()
-optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9)
+optimizer = SGD(model.parameters(), lr=0.01)
 loss_fn = CrossEntropyLoss()
 
 # -- training
 
-for epoch in range(5):
+for epoch in range(1):
     for batch_no,(x, y) in enumerate(train_loader):
         # (32, 1, 28, 28)
         x=x.flatten_batch() # (784, 32)
