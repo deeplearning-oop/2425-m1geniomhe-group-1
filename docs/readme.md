@@ -274,35 +274,6 @@ We also make validation for input paramters in `__setattr__` method, to make sur
 
 #### Transform 
 
----------------------
-Tranforms module:
----------------------
-
-Tranformers are applied as a data preprocessing step before feeding the data to the model.  
-In Dataset initialization, there are 2 types of transformations:  
-        - `transform` which is applied to the input data (X)  
-        - `target_transform` which is applied to the target data (y)
-
-    In both cases, we need to provide of the Tranformer callable classes to be applied to the dataset.  
-        <!> if several transformations are needed, `Compose` becomes handy to chain them together.
-
-Thus, for all possibel tranformations there will be a parent class `Transform` (abstract) that ensures the `__call__` magic method is implemented in all its children
-
-Possibly most useful transformations to consider:
-    - `ToTensor`: Converts the input data to a tensor, this can be a combination of different transformations (image-> tensor or numpy array -> tensor)
-    - `Normalize`: Normalize the input data, given a tensor -> returns a tensor    
-    - `Standardize`: Standardize the input data, given a tensor -> returns a tensor
-    - `MinMaxNormalize`: Normalize the input data to the range [min, max], given a tensor -> returns a tensor
-    - `Compose`: Chain several transformations together, given a list of transformations -> returns a transformed dataset
-
-
-This module contains the following CALLABLE classes:  
-    * Compose  
-    * Normalize  
-    * ToTensor  
-    * Standardize
-    * MinMaxNormalize
-
 
 The $Transform$ class is an abstract class that is meant to be inherited by other classes that implement specific transformations, in [transforms.py](https://github.com/deeplearning-oop/2425-m1geniomhe-group-1/src/transforms.py) module.  
 
