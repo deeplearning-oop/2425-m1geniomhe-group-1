@@ -204,3 +204,17 @@ A condition is added to correct the biases gradient since the biases are broadca
           if tensor.is_leaf and tensor.data.shape != tensor.grad.shape:
                 tensor.grad = np.sum(tensor.grad,axis=1).reshape(-1,1) #adjust the shape to match the data shape
 ```
+
+# Comparison
+
+![image](https://github.com/user-attachments/assets/0f6b4c25-3039-42d7-a6ae-1a177ba5fece)
+![image](https://github.com/user-attachments/assets/61a1dbf2-71f9-4c4a-b706-0bdc3f38ddac)
+![image](https://github.com/user-attachments/assets/f31329c1-caa1-4b01-a3fe-775db3c0a090)
+
+
+# Limitations
+parameters initialization
+computation graph implementation
+mode (testing, training) | no_grad()
+GPU
+more testing 
