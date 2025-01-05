@@ -388,7 +388,7 @@ def tensor(data, dtype=float32, requires_grad=False, is_leaf=False):
     ```
     
     '''
-    return Tensor(data, dtype, requires_grad, is_leaf) 
+    return Tensor(data, dtype=dtype, requires_grad=requires_grad, is_leaf=is_leaf) 
 
 def zeros(shape, dtype=float32, requires_grad=False, is_leaf=True):
     '''
@@ -411,7 +411,7 @@ def zeros(shape, dtype=float32, requires_grad=False, is_leaf=True):
     ```
     
     '''
-    return Tensor(np.zeros(shape), dtype, requires_grad, is_leaf)
+    return Tensor(np.zeros(shape), dtype=dtype, requires_grad=requires_grad, is_leaf=is_leaf)
 
 def ones(shape, dtype=float32, requires_grad=False, is_leaf=True):
     '''
@@ -434,7 +434,7 @@ def ones(shape, dtype=float32, requires_grad=False, is_leaf=True):
     ```
     
     '''
-    return Tensor(np.ones(shape), dtype, requires_grad, is_leaf)
+    return Tensor(np.ones(shape), requires_grad, is_leaf, dtype=dtype)
 
 def randn(shape, dtype=float32, requires_grad=False, is_leaf=True):
     '''
@@ -457,7 +457,7 @@ def randn(shape, dtype=float32, requires_grad=False, is_leaf=True):
     ```
     
     '''
-    return Tensor(np.random.randn(*shape), dtype, requires_grad, is_leaf)
+    return Tensor(np.random.randn(*shape), dtype=dtype, requires_grad=requires_grad, is_leaf=is_leaf)
 
 def tensor_like(tensor, data, requires_grad=False, is_leaf=False):
     '''
