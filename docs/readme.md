@@ -545,6 +545,7 @@ The `__call__` method is implemented to apply the normalization to the input dat
 # Section 3: Evaluation & Comparison to Pytorch
 
 Our library was initially tested on the MNIST dataset to guide our implementation. Our final version was able to outperform the testing accuracy of pytorach as highlighted in the plot below:
+
 ![image](https://github.com/user-attachments/assets/0f6b4c25-3039-42d7-a6ae-1a177ba5fece)
 
 The plot shows the accuracy on the MNIST testing set over 10 runs of our library against pytorch. The model used is linears1->ReLU->Linear2->Softmax with CrossEntropy loss and learning rate 0.01 with momentum 0.9 for the SGD optimizer.
@@ -568,7 +569,7 @@ We highlight below how both our approach and pytorch converge to achieve increas
 ![image](https://github.com/user-attachments/assets/d40d4e64-1e32-408f-8039-a6b2189e09c5)
 
 
-# Section 4: Limitations & Discussion
+# Section 4: Limitations
 
 1. Parameters Initialization: we currently initialize biases as vectors of zeros and initialize weights using random.rand() then - 0.5 to center them around 0 preventing bias to positive numbers. Pytorch incorporate more advanced initialization approaches, such as Xavier, which are tailored to specific activation functions and help improve the convergence speed and stability. 
 
