@@ -6,13 +6,15 @@ class Loss(Module):
     def __init__(self):
         super().__init__()
         self._cache = None
-    def loss_fn(self, y, y_hat):
+
+    def forward(self, y, y_hat):
         raise NotImplementedError
+
     def __call__(self, y, y_hat):
-        return self.loss_fn(y, y_hat)
+        return self.forward(y, y_hat)
 
 class MSE(Loss):
-    def loss_fn(self, y, y_hat):
+    def forward(self, y, y_hat):
         """
         y: Tensor of shape (batch_size, num_outputs) (target labels)
         y_hat: Tensor of shape (batch_size, num_outputs) (predicted values)
@@ -46,7 +48,7 @@ class MSE(Loss):
     
 
 class CrossEntropyLoss(Loss):
-    def loss_fn(self, y, y_hat):
+    def forward(self, y, y_hat):
         
         # adding epsilon to avoid log(0)
         epsilon = 1e-15
