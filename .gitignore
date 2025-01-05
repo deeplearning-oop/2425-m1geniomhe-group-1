@@ -1,10 +1,6 @@
 tests/*
-!tests/readme.md  
-!tests/modules/  
-!tests/assets/
-!tests/notebooks
-tests/notebooks/data
-tests/data
-data/
-
+src/data
+src/test/
+src/tests/
+utils/
 TODO.md
