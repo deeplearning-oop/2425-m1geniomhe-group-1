@@ -65,3 +65,9 @@ for epoch in range(100):
     print(predictions, y.data)
     print(f'Accuracy: {accuracy * 100:.2f}%')
     print('------------------')
+
+# for batch, (x,y) in enumerate(test_loader):
+#     x=x.flatten_batch()
+#     y_hat=model(x)
+#     loss = loss_fn(y, y_hat)
+    

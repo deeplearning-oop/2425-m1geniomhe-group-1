@@ -67,7 +67,7 @@ class DataType(Enum):
         return np.array(x, dtype=self.value)
     
     def __eq__(self, other):
-        return self.value==other.value
+        return self.value==other
 
 # ------- aliasing to make them easily accessible --------
 int32=DataType.int32
@@ -76,22 +76,30 @@ float32=DataType.float32
 float64=DataType.float64
 uint8=DataType.uint8
 
-def validate_boolean(value, default):
+def validate_boolean(value, default=False):
     '''takes a value makes sure its boolean, if its not sets it to default'''
     if not isinstance(value, bool):
         print(f'<!> invalid boolean, setting to {default}')
         value=default
     return value
 
-def validate_data_type(value, default):
+def validate_data_type(value, default=float32):
     '''takes a value makes sure its a DataType, if its not sets it to default'''
-    datatypes=DataType.__members__.values()
-    if not isinstance(value, DataType) or (value not in datatypes):
+    datatypes=list(DataType.__members__.values())
+    datatypes_str=[str(i) for i in datatypes]
+    # print(datatypes)
+    if isinstance(value, str):
+        if value not in datatypes_str:
+            print(f'<!> invalid data type, setting to {default}')
+            value=default
+        else:
+            value=DataType[value]
+    if value not in datatypes:
         print(f'<!> invalid data type, setting to {default}')
         value=default
-    if isinstance(value, str):
-        value=DataType[value]
+
     return value
+
 
 def validate_non_int(value):
     '''takes a value makes sure its not an int, return boolean
@@ -104,7 +112,7 @@ def validate_non_int(value):
 
 
 class Tensor:
-    def __init__(self, data, requires_grad=False, is_leaf=False, dtype='float32'):    
+    def __init__(self, data, requires_grad=False, is_leaf=False, dtype=float32):    
         ''' Tesnor constructor:
         
         * respecting encapsulation (private attributes + getters and setters)  
@@ -121,7 +129,7 @@ class Tensor:
         RuntimeError: Only Tensors of floating point and complex dtype can require gradients
         ```
         '''   
-        self.__dtype = dtype if isinstance(dtype, DataType) else DataType[dtype]     
+        self.__dtype = validate_data_type(dtype)     
         self.__data = np.array(data) if not isinstance(data, np.ndarray) else data
         self.__requires_grad = requires_grad
         self.__is_leaf = is_leaf
@@ -174,9 +182,10 @@ class Tensor:
         self.__is_leaf = value
 
     def __setattr__(self, name, value):
-        if name=='_Tensor__dtype':
-            # -- add a validate type function here that checks its within DataType and converts it if given a string
-            value=validate_data_type(value, float32)
+        # if name=='_Tensor__dtype':
+        #     # -- add a validate type function here that checks its within DataType and converts it if given a string
+            
+        #     value=validate_data_type(value)
            
 
         if name=='_Tensor__requires_grad':
@@ -553,7 +562,7 @@ def tensor(data, dtype=float32, requires_grad=False, is_leaf=False):
     ```
     
     '''
-    return Tensor(data, dtype, requires_grad, is_leaf) 
+    return Tensor(data, dtype=dtype, requires_grad=requires_grad, is_leaf=is_leaf) 
 
 def zeros(shape, dtype=float32, requires_grad=False, is_leaf=True):
     '''
@@ -576,7 +585,7 @@ def zeros(shape, dtype=float32, requires_grad=False, is_leaf=True):
     ```
     
     '''
-    return Tensor(np.zeros(shape), dtype, requires_grad, is_leaf)
+    return Tensor(np.zeros(shape), dtype=dtype, requires_grad=requires_grad, is_leaf=is_leaf)
 
 def ones(shape, dtype=float32, requires_grad=False, is_leaf=True):
     '''
@@ -599,7 +608,7 @@ def ones(shape, dtype=float32, requires_grad=False, is_leaf=True):
     ```
     
     '''
-    return Tensor(np.ones(shape), dtype, requires_grad, is_leaf)
+    return Tensor(np.ones(shape), requires_grad, is_leaf, dtype=dtype)
 
 def randn(shape, dtype=float32, requires_grad=False, is_leaf=True):
     '''
@@ -622,7 +631,7 @@ def randn(shape, dtype=float32, requires_grad=False, is_leaf=True):
     ```
     
     '''
-    return Tensor(np.random.randn(*shape), dtype, requires_grad, is_leaf)
+    return Tensor(np.random.randn(*shape), dtype=dtype, requires_grad=requires_grad, is_leaf=is_leaf)
 
 def tensor_like(tensor, data, requires_grad=False, is_leaf=False):
     '''

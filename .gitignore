@@ -5,8 +5,8 @@ tests/*
 !tests/notebooks
 tests/notebooks/data
 tests/modules/data
-
+src/__pycache__
 src/data
-
+tests/modules
 TODO.md
 .gitignore

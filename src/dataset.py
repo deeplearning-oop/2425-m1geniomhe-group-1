@@ -36,7 +36,7 @@ import gzip
 import requests
 from IPython.display import display
 
-from tensor import Tensor
+from tensor import Tensor, tensor
 
 
 # def validate_path(path:str):
@@ -165,14 +165,16 @@ def beautify_repr(obj):
         takes a dataset object and returns a dictionary of its attributes
 
         '''
-        return {
-            'data dimensions': dataset.data.shape, #can change it to len when implemented
-            'data points': dataset.data.shape[0],
-            'split': 'train' if dataset.train else 'test',
-            # 'root directory holding data': dataset.__root,
-            'transform': dataset.transform,
-            'target transform': dataset.target_transform
-        }
+        data=dataset.__dict__
+        # -- if one of them is nd_array or tensor, we'll convert it to a list
+        for key,val in data.items():
+            if isinstance(val, np.ndarray):
+                data[key]=val.tolist()
+            if isinstance(val, Tensor):
+                data[key]=val.data.tolist()
+        # removes the private attributes
+        data={key:val for key,val in data.items() if not key.startswith('_')}
+        return data
 
     def dfy_data(data):
         '''
@@ -207,8 +209,8 @@ class Dataset(ABC):
 
     the callable transforms are Transform ojects that are callable :)
     '''
-    def __init__(self, root, transform=None, target_transform=None):
-        self.__root=Path(root)
+    def __init__(self, root=None, transform=None, target_transform=None):
+        self.__root=Path(root) if root else None
         self.__transform=transform
         self.__target_transform=target_transform
 
@@ -242,60 +244,60 @@ class Dataset(ABC):
     target_transform: {self.__target_transform} 
 )'''
 
-# class TensorDataset(Dataset):
-#     '''Class to create a dataset from tensors
-#     ---------------------------------------
+class TensorDataset(Dataset):
+    '''Class to create a dataset from tensors
+    ---------------------------------------
 
-#     Having X and y tensors, this class will create a dataset object that can be used for training or testing    
-#         <!> each instance is either training or testing dataset
+    Having X and y tensors, this class will create a dataset object that can be used for training or testing    
+        <!> each instance is either training or testing dataset
     
-#     It takes:  
-#     * X: tensor (data)  
-#     * y: tensor (target) 
-#     * transform: callable (optional)  
-#     * target_transform: callable (optional)   
+    It takes:  
+    * X: tensor (data)  
+    * y: tensor (target) 
+    * transform: callable (optional)  
+    * target_transform: callable (optional)   
 
-#     '''
-#     def __init__(self, X, y, transform=None, target_transform=None):
-#         super().__init__(transform=transform, 
-#                         target_transform=target_transform)
-#         self.__data=X
-#         self.__targets=y
-#         self.__root='data'
+    '''
+    def __init__(self, X, y, transform=None, target_transform=None):
+        super().__init__(root=None,transform=transform, 
+                        target_transform=target_transform)
+        self.__data=X
+        self.__targets=y
+        # self.__root=None
 
 
 
-#     # -- getters and setters --
-#     @property
-#     def data(self):
-#         return self.__data
-#     @data.setter
-#     def data(self, value):
-#         self.__data=value
+    # -- getters and setters --
+    @property
+    def data(self):
+        return self.__data
+    @data.setter
+    def data(self, value):
+        self.__data=value
     
-#     @property
-#     def targets(self):
-#         return self.__targets
-#     def targets(self, value):
-#         self.__targets=value
+    @property
+    def targets(self):
+        return self.__targets
+    def targets(self, value):
+        self.__targets=value
 
-#     def __len__(self):
-#         '''abstract method implementation: len() -> returns number of data points'''
-#         return self.__y.shape[0]
+    def __len__(self):
+        '''abstract method implementation: len() -> returns number of data points'''
+        return len(self.__targets)
     
-#     def __getitem__(self, index):
-#         '''abstract method implementation: dataset[i] -> returns a tuple of data (tensor) and target (int)'''
-#         return self.__data[index], self.__targets[index]
+    def __getitem__(self, index):
+        '''abstract method implementation: dataset[i] -> returns a tuple of data (tensor) and target (int)'''
+        return self.__data[index], self.__targets[index]
 
-#     def __iter__(self):
-#         '''
-#         maybe not necessary for this class, but to avoid potential errors if iterability doesnt come from __getitem__ method
-#         '''
-#         for index in range(len(self)):
-#             yield self[index]
+    def __iter__(self):
+        '''
+        maybe not necessary for this class, but to avoid potential errors if iterability doesnt come from __getitem__ method
+        '''
+        for index in range(len(self)):
+            yield self[index]
     
-#     def __repr__(self):
-#         return super().__repr__()
+    def __repr__(self):
+        return super().__repr__()
 
     
 
@@ -495,11 +497,22 @@ class MNIST(Dataset):
 # from torchvision import datasets  
 # import torch      
 
-# if __name__=='__main__':
-#     my_train_data=MNIST(root='data',train=True)
-#     my_train_ndarray=my_train_data.data.data
-#     my_train_in_tensor=torch.tensor(my_train_ndarray)
-#     torch_train_data=datasets.MNIST(root='data',train=True,download=True)
-#     print(type(torch_train_data.data))
-#     print(torch.all(my_train_in_tensor==torch_train_data.data))
-#     # tensor(True)
+if __name__=='__main__':
+
+    x=tensor([[1,2,3],[4,5,6]])
+    y=tensor([1,0])
+
+    my_dataset=TensorDataset(X=x, y=y)
+    print(my_dataset)
+    for i,j in my_dataset:
+        print(i,j)
+
+    print('####################################')
+
+    # my_train_data=MNIST(root='data',train=True)
+    # my_train_ndarray=my_train_data.data.data
+    # my_train_in_tensor=torch.tensor(my_train_ndarray)
+    # torch_train_data=datasets.MNIST(root='data',train=True,download=True)
+    # print(type(torch_train_data.data))
+    # print(torch.all(my_train_in_tensor==torch_train_data.data))
+    # # tensor(True)
