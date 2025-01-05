@@ -195,23 +195,34 @@ class Dataset(ABC):
     This class provides a blueprint for all datasets that will be used in the project    
     Most important thing is that it enforces all its children to have these abstract methods:   
     * __getitem__  
-    * __len__  
+    * __len__   
+    Moreover, it enforces all children to have data and targets attributes by setting their property decorator to abstractmethods
 
-    Attributes:  
-    * root: Path/str (default='data/')  
+    Attributes: 
     * data: Tensor
-    * targets: Tensor
+    * targets: Tensor 
+    * root: Path/str (default='data/')  
     * transform: callable (default=None)   
     * target_transform: callable (default=None)  
 
     the callable transforms are Transform ojects that are callable :)
     '''
-    def __init__(self, root,data, targets, transform=None, target_transform=None):
-        self.__data=data
-        self.__targets=targets
+    def __init__(self, root, transform=None, target_transform=None):
         self.__root=Path(root)
         self.__transform=transform
         self.__target_transform=target_transform
+
+    @property
+    @abstractmethod
+    def data(self):
+        """Abstract property for data. Must be implemented by child class."""
+        pass
+
+    @property
+    @abstractmethod
+    def targets(self):
+        """Abstract property for targets. Must be implemented by child class."""
+        pass
 
 
     @abstractmethod
@@ -360,6 +371,7 @@ class MNIST(Dataset):
         # -- transformation can be held in __setattr__ to account for the case where none is given
         self.__data=Tensor(data)
         self.__targets=Tensor(labels) 
+        
         
         # -- inplace transformation
         if self.__transform is not None:

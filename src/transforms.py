@@ -11,6 +11,8 @@ In Dataset initialization, there are 2 types of transformations:
     In both cases, we need to provide of the Tranformer callable classes to be applied to the dataset.  
         <!> if several transformations are needed, `Compose` becomes handy to chain them together.
 
+Thus, for all possibel tranformations tehre will be a parent class `Transform` (abstract) that ensures the `__call__` magic method is implemented in all its children
+
 Possibly most useful transformations to consider:
     - `ToTensor`: Converts the input data to a tensor, this can be a combination of different transformations (image-> tensor or numpy array -> tensor)
     - `Normalize`: Normalize the input data, given a tensor -> returns a tensor    
@@ -30,8 +32,8 @@ This module contains the following CALLABLE classes:
 '''
 
 import numpy as np
-import cv2
-import PIL
+import cv2, PIL
+from abc import ABC, abstractmethod
 from tensor import Tensor
 
 valid_transforms = ['ToTensor', 'Normalize', 'Standardize', 'MinMaxNormalize', 'Compose']
