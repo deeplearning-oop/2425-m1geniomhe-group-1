@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from module import Module
 from tensor import Tensor
 import numpy as np
@@ -7,6 +8,7 @@ class Loss(Module):
         super().__init__()
         self._cache = None
 
+    @abstractmethod
     def forward(self, y, y_hat):
         raise NotImplementedError
 
