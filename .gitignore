@@ -6,6 +6,5 @@ tests/*
 tests/notebooks/data
 tests/data
 data/
-src/test/
 
 TODO.md

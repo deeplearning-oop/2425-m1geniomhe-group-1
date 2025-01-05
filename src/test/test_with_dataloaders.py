@@ -16,10 +16,10 @@ import numpy as np
 
 from dataset import MNIST
 from dataloader import DataLoader
-from transforms import Compose, ToTensor, Normalize
+from transforms import Compose, ToTensor, Normalize, Standardize
 
 # -- using our implemented dataset module
-transformation=Compose([ToTensor(), Normalize()])
+transformation=Compose([ToTensor(), Standardize()])
 train_data = MNIST(root='data/', train=True, download=True,transform=transformation)
 test_data = MNIST(root='data/', train=False, download=True,transform=transformation)
 
@@ -43,7 +43,7 @@ class Model(Module):
         return self.softmax(x)
     
 model = Model()
-optimizer = SGD(model.parameters(), lr=0.01)
+optimizer = SGD(model.parameters(), lr=0.1)
 loss_fn = CrossEntropyLoss()
 
 # -- training
