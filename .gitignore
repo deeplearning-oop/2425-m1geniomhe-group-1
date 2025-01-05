@@ -4,6 +4,7 @@ tests/*
 !tests/assets/
 !tests/notebooks
 tests/notebooks/data
-
+tests/data
+data/
 
 TODO.md
