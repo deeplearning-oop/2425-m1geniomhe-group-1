@@ -6,7 +6,7 @@ class Module(ABC):
     def __init__(self):
         self._subclasses={} #dictionary to save all the initialized instances of the classes that inherit Module like the linear layers and the activation functions 
         self._parameters={} #dictionary to register the parameters (weights and biases) of the model
-        
+        self.mode = 'train'
         
     def __setattr__(self, name, value): #to automatically register the subclasses (layers and activation functions) and parameters when they are assigned
         if isinstance(value, Module):
@@ -27,6 +27,11 @@ class Module(ABC):
             parameters_list.extend(layer.parameters())
         return parameters_list
 
+    def train(self):
+        self.mode = 'train'
+        
+    def eval(self):
+        self.mode = 'eval'
 
     @abstractmethod
     def forward(self, x): #to be implemented by the subclasses (Model, Linear, Activation)
