@@ -81,7 +81,7 @@ It has 5 values for now:
 * `float64`
 * `int32`
 * `float32`
-* `uint8
+* `uint8`
 
 > uint8 is used for images, and is basically a byte. It is used to represent pixel values in images, great memory saver. Also by default in the first step of processign images the pixels are converted to uint8.
 
