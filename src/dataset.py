@@ -261,9 +261,20 @@ class TensorDataset(Dataset):
     def __init__(self, X, y, transform=None, target_transform=None):
         super().__init__(root=None,transform=transform, 
                         target_transform=target_transform)
-        self.__data=X
-        self.__targets=y
+        self.__data=X if isinstance(X, Tensor) else Tensor(X)
+        self.__targets=y if isinstance(y, Tensor) else Tensor(y)
+        self.__transform=transform
+        self.__target_transform=target_transform
         # self.__root=None
+
+        # self.__data=Tensor(X)
+        # self.__targets=Tensor(y) 
+
+        # -- inplace transformation
+        if self.__transform is not None:
+            self.__transform(self.__data)
+        if self.__target_transform is not None:
+            self.__target_transform(self.__targets)
 
 
 
@@ -280,6 +291,19 @@ class TensorDataset(Dataset):
         return self.__targets
     def targets(self, value):
         self.__targets=value
+
+    @property
+    def transform(self):
+        return self.__transform
+    @transform.setter
+    def transform(self,value):
+        self.__transform=value
+    @property
+    def target_transform(self):
+        return self.__target_transform
+    @target_transform.setter
+    def target_transform(self,value):
+        self.__target_transform=value
 
     def __len__(self):
         '''abstract method implementation: len() -> returns number of data points'''
