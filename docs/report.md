@@ -37,9 +37,9 @@ def __matmul__(self, other):
         out.grad_fn_name = "MatMulBackward"
         return out
 ```
-Within each primitive operation, the operands are added to a set called parents. It must be a set since the same operand could occur more than once but it must be counted only once. Similarly, the operation name is stored in grad_fn_name. A _backward function is defined within each primitive operation to compute its gradient. The function is stored in grad_fn to be onyl executed when needed. 
+Within each primitive operation, the operands are added to a set called parents. It must be a set since the same operand could occur more than once but it must be counted only once. Similarly, the operation name is stored in grad_fn_name. A _backward function is defined within each primitive operation to compute its gradient. The function is stored in grad_fn to be only executed when needed. 
 
-Moreover, in the initial version (as in branches `prototype` and `prototype2`), the activation functions were also defined in the same format within Tensor to simplify testing. The forward method of the loss functions that inherit class Loss were also defined in the same format to contribute to the computation graph construction. For instance, MSE was defined as follows:
+Moreover, in the initial version (as in branches `prototype` and `prototype2`), the activation functions were also defined in the same format within Tensor to simplify testing. The forward method of the loss functions that inherit class `Loss` were also defined in the same format to contribute to the computation graph construction. For instance, MSE was defined as follows:
 
 ```python
 class MSE(Loss):
@@ -87,7 +87,7 @@ def grad_compute(self, grad, op_type, other=None):
             update_grad(grad * self.data, other)
 ```
 
-Furthermore, a `backward_decorator` was defined to take care of the execution as well as the operation name, parents, and gradient function storage for all operation types:
+Furthermore, a `backward_decorator` was defined to take care of the operation name, parents, and gradient function storage as well as the execution (during the forward pass) of all operation types:
 
 ```python
 def backward_decorator(op_type):
@@ -104,16 +104,16 @@ def backward_decorator(op_type):
         return decorator
 ```
 
-This allows for the simplification of the definition of all operations to this format:
+This allows for the simplification of the definition of all operations to the following format:
 ```python
  @backward_decorator("matmul")
     def __matmul__(self, other):
         other = other if isinstance(other, Tensor) else Tensor(other)
         return Tensor(self.__data @ other.__data, requires_grad=self.__requires_grad or other.__requires_grad, is_leaf=False)
 ```
-The decorator takes the forward operation name as a parameter, both to store if in `grad_fn_name` and to assign the proper `grad_fn` using the gradient engine `grad_compute`.
+The decorator takes the forward operation name as a parameter, both to store it in `grad_fn_name` and to assign the proper `grad_fn` using the gradient engine `grad_compute`.
 
-A similar organization was applied to both `Activation` and `Loss`, the main difference being defining the backward_decorator as a statis method within these 2 classes to be able to use in all classes inheriting them. An example of these functions within the class Loss is highlighted below:
+A similar organization was applied to both `Activation` and `Loss`, the main difference being defining the `backward_decorator` as a static method in them to be able to use it in all classes inheriting them. An example of these functions within the class Loss is highlighted below:
 
 ```python
     def grad_compute(self, loss_type, y, y_hat):
@@ -181,7 +181,7 @@ It starts by setting the gradient of this first tensor `loss` to 1.
 
 ### Topological Ordering
 
-Next, a stack data structure is used to ensure following the topological ordering in the backward propagation. 
+Next, a stack data structure is used to ensure following a topological ordering during the backward propagation: 
 ```python     
         to_process = [self]
         # Processing the tensors in reverse order through a stack data structure (to establish topological order)
@@ -193,11 +193,11 @@ Next, a stack data structure is used to ensure following the topological orderin
                 # Add the parents of this tensor to the stack for backpropagation
                 to_process.extend([parent for parent in tensor.parents if parent.requires_grad])
 ```
-The tensor `loss` is the first to be added to `to_process`. Next, its `grad_fn` is executed and its parents (y and y_hat) are added to the stack. The same process keeps repeating until the stack is empty. The `grad_fn` of `loss` was defined through the static `backward_decorator` during the forward propagation, but only executed when `backward()` is called.  
+The tensor `loss` is the first to be added to `to_process`. Next, its `grad_fn` is executed and its parents `y and y_hat` are added to the stack. The same process keeps repeating until the stack is empty. The `grad_fn` of `loss` was defined through the static `backward_decorator` during the forward propagation, but only executed when `backward()` is called.  
 
-Following this approach, the chain rule will be used to compute the gradient of the loss w.r.t the weights and biases by traversing the computation graph step-by-step in reverse order. Each node will execute its previously stored `grad_fn` and add its `parents` to the stack.
+Following this approach, the chain rule will be applied to compute the gradient of the loss w.r.t the weights and biases by traversing the computation graph step-by-step in reverse order. Each node will execute its previously stored `grad_fn` and add its `parents` to the stack.
 
-A condition is added to correct the biases gradient since the biases are broadcasted in the linear layers computations to match the batch size used. In this condition, `is_leaf` is used to only check for leaf tensors that has no parents (i.e. only weights, biases, and input data). `is_leaf` is set as True by default, but it is set as False for the tensor outputs of all operations.  
+A condition is added to correct the biases gradient since the biases are broadcasted in the linear layers computations to match the batch size used. In this condition, `is_leaf` is used to only check for leaf tensors that have no parents (i.e. only weights, biases, and input data). `is_leaf` is set as True by default, but it is set as False for the tensor outputs of all operations.  
 
 ```python
           #check if the tensor is a leaf and it was broadcasted (in case of batch_size>1)
