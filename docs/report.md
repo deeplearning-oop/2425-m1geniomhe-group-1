@@ -205,16 +205,40 @@ A condition is added to correct the biases gradient since the biases are broadca
                 tensor.grad = np.sum(tensor.grad,axis=1).reshape(-1,1) #adjust the shape to match the data shape
 ```
 
-# Comparison
+# Evaluation & Comparison to Pytorch
 
+Our library was initially tested on the MNIST dataset to guide our implementation. Our final version was able to outperform the testing accuracy of pytorach as highlighted in the plot below:
 ![image](https://github.com/user-attachments/assets/0f6b4c25-3039-42d7-a6ae-1a177ba5fece)
+
+The plot shows the accuracy on the MNIST testing set over 10 runs of our library against pytorch. The model used is linears1->ReLU->Linear2->Softmax with CrossEntropy loss and learning rate 0.01 with momentum 0.9 for the SGD optimizer.
+
+The following results are the same with learning rate set at 0.1 without momentum (regular SGD), reflecting that the same pattern holds.
+
 ![image](https://github.com/user-attachments/assets/61a1dbf2-71f9-4c4a-b706-0bdc3f38ddac)
-![image](https://github.com/user-attachments/assets/f31329c1-caa1-4b01-a3fe-775db3c0a090)
+
+We also note that our library tends to be significantly more stable than pytorach over different runs and over learning rate changes. Our library's accuracy remains close to 90% while pytorch goes from accuracies of 90% down to 75% depending on the run.
+
+Similarly, our running time is slightly better than pytorch for MNIST, and this pattern holds over different runs. This could be explained by the relative simplicity of our implementation relative to the complexity of pytorch's implementation which requires many dependencies. In general, for complex tasks, pytorch implements several optimization tools that will expectedly make it much more efficient than our approach. But for such simple tasks, out approach can do as good as pytorch or even outperform it.  
+
+![image](https://github.com/user-attachments/assets/02e04c47-8ad6-4df8-999f-c22312765d45)
+
+In addition to MNIST, we tested our library on multiple well-known simulated datasets (linear, circular, and spiral). The distribution of one example of simulated linear data is shown below:
+
+![image](https://github.com/user-attachments/assets/4dbe0a6b-7dfd-4875-868e-4eab69fef4db)
+
+We highlight below how both our approach and pytorch converge to achieve increased accuracy over the course of 10 epochs over the same data:
+
+![image](https://github.com/user-attachments/assets/d40d4e64-1e32-408f-8039-a6b2189e09c5)
 
 
-# Limitations
-parameters initialization
-computation graph implementation
-mode (testing, training) | no_grad()
-GPU
-more testing 
+# Limitations & Discussion
+
+1. Parameters Initialization: we currently initialize biases as vectors of zeros and initialize weights using random.rand() then - 0.5 to center them around 0 preventing bias to positive numbers. Pytorch incorporate more advanced initialization approaches, such as Xavier, which are tailored to specific activation functions and help improve the convergence speed and stability. 
+
+3. Computation Graph Implementation: our implementation of the computation graph shares deveral elements of that of pytorch. However, it currently lacks other optimizations like dynamic graph pruning or efficient memory management, which are useful for larger models. 
+
+4. Mode and no_grad(): our library introduces modes for training and testing, but the implementation can be further optimized to make better use of them. While, the gradients will not computed during testing in our approach since `loss.backward()` won't be executed, the computation braph will still be constructed, which we could consider turning off, mimicking pyTorch’s torch.no_grad(). 
+
+5. GPU Support: currently, our library operates only on CPUs, which limits its applicability to small-scale experiments. PyTorch leverages GPUs using CUDA. Adding GPU support could make our library more competitive for real-world large-scale applications. 
+
+6. More Extensive Testing: While initial benchmarks and simulated data show that our library performs quite well in terms of accuracy, running time, stability, and convergence, further testing of larger models on more extensive benchmark datasets is necessary. For the future, we could make use of benchmarks datasets like CIFAR-10 for more comprehensive comparison with pytorch. Additionally, we can test for different architectures, such as convolutional and recurrent networks.
