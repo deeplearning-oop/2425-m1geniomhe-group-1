@@ -31,7 +31,7 @@ import cv2
 import pandas as pd
 
 from pathlib import Path
-import os
+import sys
 import gzip
 import requests
 from IPython.display import display
@@ -322,7 +322,104 @@ class TensorDataset(Dataset):
     
     def __repr__(self):
         return super().__repr__()
+    
+def df_to_Xy(df1:pd.DataFrame, df2=None, target_col=None):
+    '''
+    takes a pandas dataframe and returns X,y tuple such that X,y are numpy arrays
 
+    '''
+    if df2 is None:
+        df=df1
+        X=df.drop(columns=[target_col])
+        y=df[target_col]
+        return X.values, y.values
+    else:
+        return df1.values, df2.values
+
+if __name__=='__main__':
+    df_X=pd.read_csv('../tests/data.csv')
+    df_y=pd.read_csv('../tests/labels.csv')
+    X,y=df_to_Xy(df_X, df_y)
+    print(f'shape of X: {X.shape}; shape of y: {y.shape}')
+    print(f'type of X: {type(X)}; type of y: {type(y)}')
+
+
+
+
+class DataFrameDataset(Dataset):
+    '''
+    Class to create a Dataset object from a pandas.dataframe
+    --------------------------------------------------------
+    (optionally csv)
+
+    It takes:
+    * root: (optional) Path/str, path to the dataset file (if csv)
+    * data: pd.DataFrame 
+    * target: str, name of the column that contains the target labels
+    * transform: callable (optional)
+    * target_transform: callable (optional)
+
+
+    '''
+    def __init__(self, root=None, data=None, target=None, transform=None, target_transform=None):
+        super().__init__(root, transform=transform, target_transform=target_transform)
+
+        self.__transform=transform
+        self.__target_transform=target_transform
+
+        if root is None and data is None and target is None:
+            raise ValueError('You must provide a DataFrame and a target column name')
+
+        elif root is not None:
+            print('-- given csv file --')
+            if not root.endswith('.csv') or not Path(root).exists():
+                raise ValueError('The file must be a csv file')
+            df=pd.read_csv(root)
+            data=df.drop(columns=[target])
+            target=df[target]
+            self.__data=Tensor(data.values)
+            self.__target=Tensor(target.values)
+
+        elif data is not None and target is not None:
+            # if they are strings chekc for their paths
+            
+            if isinstance(data,pd.DataFrame) and isinstance(target,pd.DataFrame): #not a string both should be df
+                X,Y=df_to_Xy(data,target)
+                self.__data=Tensor(X)
+                self.__target=Tensor(Y)
+            else:
+                raise ValueError('data and target must be pandas dataframes')
+
+
+        elif data is not None and isinstance(target, str):
+            if isinstance(data, str):
+                if sys.path.exists(data) and data.endswith('.csv'):
+                    df=pd.read_csv(data)
+                    data=df.drop(columns=[target])
+                    target=df[target]
+                    self.__data=Tensor(data.values)
+                    self.__target=Tensor(target.values)
+                else:
+                    raise ValueError('The path to the csv file is not correct')
+            elif isinstance(data, pd.DataFrame):
+                #in this case teh df is just data
+                X,Y=df_to_Xy(data, target_col=target)
+                self.__data=Tensor(X)
+                self.__target=Tensor(Y)
+            else:
+                raise ValueError('data must be a pandas dataframe or a path to a csv file')
+            
+
+        if self.__transform is not None:
+            self.__transform(self.__data)
+        if self.__target_transform is not None:
+            self.__target_transform(self.__data[self.__target])
+
+    # -- getters and setters --
+    @property 
+    def data(self):
+        return self.__data
+    
     
 
 class MNIST(Dataset):
