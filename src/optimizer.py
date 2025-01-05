@@ -1,8 +1,14 @@
-class Optimizer:
+from abc import ABC, abstractmethod
+
+class Optimizer(ABC):
     def __init__(self, parameters, lr=0.01, momentum=0):
         self.parameters = [p for p in parameters]
         self.lr = lr
         self.momentum = momentum
+        
+    @abstractmethod
+    def step(self):
+        raise NotImplementedError
 
     def zero_grad(self):
         for p in self.parameters:
