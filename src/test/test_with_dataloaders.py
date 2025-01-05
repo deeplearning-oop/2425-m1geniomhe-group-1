@@ -16,10 +16,12 @@ import numpy as np
 
 from dataset import MNIST
 from dataloader import DataLoader
+from transforms import Compose, ToTensor, Normalize
 
 # -- using our implemented dataset module
-train_data = MNIST(root='data/', train=True, download=True)
-test_data = MNIST(root='data/', train=False, download=True)
+transformation=Compose([ToTensor(), Normalize()])
+train_data = MNIST(root='data/', train=True, download=True,transform=transformation)
+test_data = MNIST(root='data/', train=False, download=True,transform=transformation)
 
 # -- using our implemented dataloader module
 train_loader = DataLoader(dataset=train_data, batch_size=32, shuffle=True)
@@ -29,8 +31,8 @@ test_loader = DataLoader(dataset=test_data, batch_size=32, shuffle=True)
 class Model(Module):
     def __init__(self):
         super().__init__()
-        self.linear1 = Linear(20, 28*28)
-        self.linear2 = Linear(10, 20)
+        self.linear1 = Linear(28*28,20)
+        self.linear2 = Linear(20, 10)
 
     def forward(self, x):
         x = self.linear1(x)
@@ -44,11 +46,11 @@ loss_fn = CrossEntropyLoss()
 
 # -- training
 
-for epoch in range(5):
+for epoch in range(100):
     for batch_no,(x, y) in enumerate(train_loader):
         # (32, 1, 28, 28)
         x=x.flatten_batch() # (784, 32)
-        x=x/255
+        # x=x/255
         optimizer.zero_grad()
         y_hat = model(x)
         loss = loss_fn(y, y_hat)
