@@ -155,7 +155,7 @@ In the `Module` class, the method `__call__` was implemented to call the `forwar
 
 The `forward` method of `Linear` applies the affine linear transformation to the input `x` and outputs `y = xW^T + b`, where `W` is the weights and `b` is the bias. The `forward` method of `Activation` is an abstract method that is implemented by the different activation functions (`ReLU`, `Softmax`) that inherit `Activation` class.
 
-### `class Dataset`, `DataLoader`, and `Transform` _(extensions)_:
+### `class Dataset`, `DataLoader`, `Transform` _(extensions)_:
 
 #### Dataset
 
@@ -164,11 +164,11 @@ This module uses helper functions to load and preprocess example datasets like M
 
 a `Dataset` object shall have the following attributes:  
 
-* `root`: the root directory where the dataset is stored  
+* `root`: the root directory where the dataset is stored   
 * `data`: the data of the dataset, in the form of a tensor  
-* `targets`: the labels of the dataset, in the form of a tensor  
-* `transform`: a callable (we will implement this later) that can be passed to the dataset to transform the data   
-* `target_transform`: a callable (we will implement this later) that can be passed to the dataset to transform the labels 
+* `targets`: the labels of the dataset, in the form of a tensor    
+* `transform`: a callable (we will implement this later) that can be passed to the dataset to transform the data    
+* `target_transform`: a callable (we will implement this later) that can be passed to the dataset to transform the labels  
 
 We have the following children for now:  
 
@@ -180,8 +180,8 @@ Dataset
 
 Abstract methods to force the children to implement:  
 
-* `__getitem__`: to get an item from the dataset, which is a tuple of the data and the label (Tensor, int)  
-* `__len__`: to get the length of the dataset (number of data points)   
+* `__getitem__`: to get an item from the dataset, which is a tuple of the data and the label (Tensor, int)   
+* `__len__`: to get the length of the dataset (number of data points)    
 
 The `datasets` class is actually found within `torchvision` library and is used to load and preprocess datasets. What we aim to do is to provide a similar interface to the user, so that they can use our library in a similar way to how they would use PyTorch.  
 
@@ -235,10 +235,10 @@ This class is used to create a dataset from tensors. It is used to create a data
 
 It takes:  
 
-* `X`: tensor (data)  
-* `y`: tensor (target)  
-* `transform`: callable (optional)  
-* `target_transform`: callable (optional)  
+* `X`: tensor (data)   
+* `y`: tensor (target)   
+* `transform`: callable (optional)   
+* `target_transform`: callable (optional)   
 
 _and root here is not needed, as the data is already provided in the form of variables_
 
@@ -256,10 +256,10 @@ Testing torch's `torch.utils.data.DataLoader` class, we found that it is iterabl
 
 Attributes:  
 
-* `dataset`: dataset.Dataset object (child of it since it's an abstract class)  
-* `batch_size`: int, default=64  
-* `shuffle`: bool, default=True  
-* `num_samples`: int, number of samples in the dataset (derived from the dataset object (`len()`)) 
+* `dataset`: dataset.Dataset object (child of it since it's an abstract class)   
+* `batch_size`: int, default=64    
+* `shuffle`: bool, default=True   
+* `num_samples`: int, number of samples in the dataset (derived from the dataset object (`len()`))  
 
 Encapsulation is respected by implementing getters and setters for all attributes (that are private) ✅
 
@@ -281,8 +281,8 @@ They are all callable classes, and they all implement the `__call__` magic metho
 
 In torch it is also part of the seperate `torchvision` library in `torchvision.transforms` module. As is the case using _vision_, the most useful transformations to consider are:  
 
-* ToTensor  
-* Normalize  
+* ToTensor   
+* Normalize   
 * Compose
 
 We will implement them + 2 more:  
