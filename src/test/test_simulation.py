@@ -113,7 +113,7 @@ from loss import CrossEntropyLoss,MSE
 from optimizer import SGD
 from transforms import Standardize, ToTensor, Compose
 
-X, y = generate_data(choice='linear', n_samples=500, noise=0.1)
+X, y = generate_data(choice='spiral', n_samples=500, noise=0.1)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # -- testing if it workd on ndarray
@@ -154,14 +154,14 @@ class SimpleNN(Module):
         return x
     
 model = SimpleNN()
-optimizer = SGD(model.parameters(), lr=0.1, momentum=0.9)
+optimizer = SGD(model.parameters(), lr=0.01)
 loss_fn = CrossEntropyLoss()
 
 # -- training
-for epoch in range(10):
+for epoch in range(500):
     for batch_no,(x, y) in enumerate(train_loader):
         x.flatten_batch() #or just transpose, can do x.T now
-        print(f'x shape: {x.shape}, y shape: {y.shape}')
+        # print(f'x shape: {x.shape}, y shape: {y.shape}')
         optimizer.zero_grad()
         y_hat = model(x)
         loss = loss_fn(y, y_hat)

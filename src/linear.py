@@ -39,7 +39,6 @@ class Linear(Module):
         
         
     def forward(self, x): #applies affine linear transformation 
-        # print(f'W shape: {self.weights.data.shape}, x shape: {x.shape}, b shape: {self.bias.data.shape}')
         return self.weights @ x + self.bias
     
         

@@ -10,7 +10,7 @@ from module import Module
 from linear import Linear
 from optimizer import SGD
 from loss import CrossEntropyLoss, MSE
-
+from activation import ReLU, Softmax
 from tensor import Tensor
 import numpy as np
 
@@ -32,27 +32,27 @@ class Model(Module):
     def __init__(self):
         super().__init__()
         self.linear1 = Linear(28*28,20)
+        self.relu=ReLU()
         self.linear2 = Linear(20, 10)
+        self.softmax=Softmax()
 
     def forward(self, x):
         x = self.linear1(x)
-        x = x.relu()
+        x = self.relu(x)
         x = self.linear2(x)
-        return x.softmax()
+        return self.softmax(x)
     
 model = Model()
-optimizer = SGD(model.parameters(), lr=0.1, momentum=0.9)
+optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9)
 loss_fn = CrossEntropyLoss()
 
 # -- training
 
-for epoch in range(100):
+for epoch in range(5):
     for batch_no,(x, y) in enumerate(train_loader):
         # (32, 1, 28, 28)
-        print(x.shape,y.shape)
         x=x.flatten_batch() # (784, 32)
-        # x=x/255
-        print('-- after flattening --')
+
         optimizer.zero_grad()
         y_hat = model(x)
         loss = loss_fn(y, y_hat)
