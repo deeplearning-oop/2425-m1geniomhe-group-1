@@ -4,7 +4,7 @@
 ├── README.md
 ├── TODO.md
 ├── VERSION
-├── ann/
+├── ann/                    # -- the python library that is set up by setup.py (pip install)
 │   ├── __init__.py
 │   ├── extensions/
 │   │   ├── __init__.py
@@ -39,45 +39,24 @@
 │   │   ├── v0-dark.jpg
 │   │   └── v0-light.jpg
 │   ├── readme.md
-│   ├── report.md
-│   ├── report.pdf
-│   └── report.rmd
-├── examples/
-│   ├── getting_started.md
-│   ├── neural_network.ipynb
-│   ├── notebooks/
-│   │   ├── dataset.ipynb
-│   │   ├── parameters.ipynb
-│   │   ├── tensor.ipynb
-│   │   └── test.ipynb
-│   ├── output.csv
-│   └── utils/
-│       ├── image_conversion.sh
-│       └── setup.py
+│   └── report.pdf
 ├── requirements.txt
 ├── setup.py
 ├── src/
-│   ├── __pycache__/
-│   │   └── data_simulation.cpython-312.pyc
 │   ├── activation.py
-│   ├── data/
-│   │   └── MNIST/
-│   │       └── raw/
-│   │           ├── t10k-images-idx3-ubyte
-│   │           ├── train-images-idx3-ubyte.gz
-│   │           └── train-labels-idx1-ubyte
-│   ├── data_simulation.py
 │   ├── dataloader.py
 │   ├── dataset.py
 │   ├── tensor.py
-│   ├── test/
-│   │   ├── comparisons.ipynb
-│   │   └── data_simulation.py
 │   └── transforms.py
 └── tests/
     ├── benchmarks/
     │   ├── MNIST.py
+    |   ├── simulated_linear.ipynb
+    |   ├── simulated_circular.ipynb
+    |   ├── simulated_checkerboard.ipynb
     │   └── simulated_spiral.ipynb
+    ├── mocks/
+    │   └── vision.ipynb
     └── models/
         ├── test_simulation.py
         └── test_with_dataloaders.py
