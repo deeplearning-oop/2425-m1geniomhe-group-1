@@ -4,3 +4,7 @@ src/test/
 src/tests/
 utils/
 TODO.md
+docs/report*
+!docs/report.pdf
+__pycache__/
+*.pyc
