@@ -1,0 +1,83 @@
+2425-m1geniomhe-group-1/
+├── 2425-project-proposal.pdf
+├── LICENSE.md
+├── README.md
+├── TODO.md
+├── VERSION
+├── ann/
+│   ├── __init__.py
+│   ├── extensions/
+│   │   ├── __init__.py
+│   │   ├── dataloader.py
+│   │   ├── dataset.py
+│   │   └── transforms.py
+│   ├── nn/
+│   │   ├── __init__.py
+│   │   ├── activation.py
+│   │   ├── linear.py
+│   │   ├── loss.py
+│   │   ├── module.py
+│   │   ├── optimizer.py
+│   │   └── parameter.py
+│   ├── tensor.py
+│   └── utils/
+│       ├── __init__.py
+│       ├── functions.py
+│       ├── processing.py
+│       ├── simulation.py
+│       └── validation.py
+├── assets/
+│   ├── comparison1.png
+│   ├── comparison2.png
+│   ├── comparison3.png
+│   ├── comparison4.png
+│   └── data_viz.png
+├── docs/
+│   ├── diagrams/
+│   │   ├── class-v1.jpg
+│   │   ├── object-v1.jpg
+│   │   ├── v0-dark.jpg
+│   │   └── v0-light.jpg
+│   ├── readme.md
+│   ├── report.md
+│   ├── report.pdf
+│   └── report.rmd
+├── examples/
+│   ├── getting_started.md
+│   ├── neural_network.ipynb
+│   ├── notebooks/
+│   │   ├── dataset.ipynb
+│   │   ├── parameters.ipynb
+│   │   ├── tensor.ipynb
+│   │   └── test.ipynb
+│   ├── output.csv
+│   └── utils/
+│       ├── image_conversion.sh
+│       └── setup.py
+├── requirements.txt
+├── setup.py
+├── src/
+│   ├── __pycache__/
+│   │   └── data_simulation.cpython-312.pyc
+│   ├── activation.py
+│   ├── data/
+│   │   └── MNIST/
+│   │       └── raw/
+│   │           ├── t10k-images-idx3-ubyte
+│   │           ├── train-images-idx3-ubyte.gz
+│   │           └── train-labels-idx1-ubyte
+│   ├── data_simulation.py
+│   ├── dataloader.py
+│   ├── dataset.py
+│   ├── tensor.py
+│   ├── test/
+│   │   ├── comparisons.ipynb
+│   │   └── data_simulation.py
+│   └── transforms.py
+└── tests/
+    ├── benchmarks/
+    │   ├── MNIST.py
+    │   └── simulated_spiral.ipynb
+    └── models/
+        ├── test_simulation.py
+        └── test_with_dataloaders.py

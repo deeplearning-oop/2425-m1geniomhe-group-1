@@ -72,14 +72,14 @@ if ! echo "$new_version" > VERSION; then
 fi
 echo "Updated VERSION to $new_version."
 
-# Ensure the docs directory exists
-if [[ ! -d docs ]]; then
-    mkdir -p docs
-    echo "Created docs directory."
-fi
+# # Ensure the docs directory exists
+# if [[ ! -d docs ]]; then
+#     mkdir -p docs
+#     echo "Created docs directory."
+# fi
 
-# Add entry to docs/changelog.md
-changelog_file="docs/changelog.md"
+# Add entry to utils/changelog.md
+changelog_file="utils/changelog.md"
 if [[ ! -f $changelog_file ]]; then
     echo "# Changelog" > "$changelog_file"
 fi
