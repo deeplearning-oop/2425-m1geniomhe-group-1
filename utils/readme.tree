@@ -49,14 +49,19 @@
 │   ├── tensor.py
 │   └── transforms.py
 └── tests/
-    ├── benchmarks/
-    │   ├── MNIST.py
-    |   ├── simulated_linear.ipynb
-    |   ├── simulated_circular.ipynb
-    |   ├── simulated_checkerboard.ipynb
-    │   └── simulated_spiral.ipynb
-    ├── mocks/
-    │   └── vision.ipynb
-    └── models/
-        ├── test_simulation.py
-        └── test_with_dataloaders.py
+|   ├── benchmarks/
+|   │   ├── MNIST.py
+|   |   ├── simulated_linear.ipynb
+|   |   ├── simulated_circular.ipynb
+|   |   ├── simulated_checkerboard.ipynb
+|   │   └── simulated_spiral.ipynb
+|   ├── mocks/
+|   │   └── vision.ipynb
+|   └── models/
+|       ├── test_simulation.py
+|       └── test_with_dataloaders.py
+└── utils
+    ├── changelog.md
+    ├── make-global.sh
+    ├── readme.tree
+    └── update-version.sh
