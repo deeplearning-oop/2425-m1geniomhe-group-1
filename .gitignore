@@ -1,0 +1,13 @@
+src/data
+src/__pycache__  
+src/test/
+src/tests/
+src/*.pyc
+src/data_simulation.py
+
+examples/
+
+docs/report.*
+!docs/report.pdf
+
+TODO.md
