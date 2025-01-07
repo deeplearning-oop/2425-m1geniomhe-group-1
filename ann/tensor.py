@@ -356,7 +356,55 @@ class Tensor:
     def __matmul__(self, other):
         other = other if isinstance(other, Tensor) else Tensor(other)
         return Tensor(self.__data @ other.__data, requires_grad=self.__requires_grad or other.__requires_grad, is_leaf=False)
-              
+          
+    def draw_graph(self, graph_name="computation_graph"):
+        """
+        Drawing the computation graph for the current tensor.
+        
+        Parameters:
+        - graph_name (str): The name of the graph visualization file.
+        """
+        from graphviz import Digraph
+
+        graph = Digraph(name=graph_name)
+        visited_nodes = set()  # Track visited nodes
+        to_process = [self]
+
+        while to_process:
+            tensor = to_process.pop()
+
+            # Add tensor node if not already visited
+            if tensor not in visited_nodes:
+                visited_nodes.add(tensor)
+
+                if tensor.grad_fn_name:
+                    grad_fn_info = tensor.grad_fn_name.replace("Backward", "")
+
+                    # Create a seperate node for the grad_fn_name
+                    graph.node(f"op_{id(tensor)}", label=grad_fn_info, shape="rectangle", width="0.6")
+
+                    label = f"Shape: {tensor.data.shape}\nGrad: {tensor.requires_grad}"
+                    graph.node(str(id(tensor)), label=label)
+
+                    # connect the operation node to both parents and child
+                    for parent in tensor.parents:
+                        graph.edge(str(id(parent)), f"op_{id(tensor)}")
+
+                    graph.edge(f"op_{id(tensor)}", str(id(tensor)))
+
+                else:
+                    label = f"Shape: {tensor.data.shape}\nGrad: {tensor.requires_grad}"
+                    graph.node(str(id(tensor)), label=label)
+
+            if tensor.grad_fn is not None:
+                for parent in tensor.parents:
+                    # Add parent to process if not already visited
+                    if parent not in visited_nodes:
+                        to_process.append(parent)
+
+        graph.render(filename=graph_name, format="png", cleanup=True)
+        print(f"Computation graph saved as {graph_name}.png")          
+    
     def detach(self):
         # Create a new tensor that shares the same data but has no gradient tracking
         detached_tensor = Tensor(self.__data, requires_grad=False)
