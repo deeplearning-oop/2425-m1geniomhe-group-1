@@ -7,7 +7,12 @@ src/data_simulation.py
 
 examples/
 
+tests/data # -- large csv files 
+tests/benchmarks/res
+
 docs/report.*
 !docs/report.pdf
 
 TODO.md
+
+tests/benchmarks/simulated_*

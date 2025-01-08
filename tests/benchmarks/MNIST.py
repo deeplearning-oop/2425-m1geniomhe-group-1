@@ -143,7 +143,7 @@ for run in range(10):
     print('------------------')
 
 # Optionally, you can calculate and print the average accuracy across all runs
-average_accuracy = sum(accuracies) / len(accuracies)
+average_accuracy = sum(pytorch_accuracies) / len(accuracies)
 print(f'Average Accuracy over 10 runs: {average_accuracy:.2f}%')
 
 plt.figure(figsize=(10, 6))
