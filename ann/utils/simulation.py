@@ -1,6 +1,11 @@
+'''
+This module provides functionalities to generate data for testing and visualization purposes.
+'''
+
 import numpy as np
-from functools import wraps
 import matplotlib.pyplot as plt
+from functools import wraps
+
 
 def viz_generated_data(func):
     """

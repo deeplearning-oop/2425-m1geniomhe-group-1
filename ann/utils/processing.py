@@ -1,7 +1,5 @@
 '''
-----------------------------------
-
-
+This module provides functioanlities fo data handeling and processing
 '''
 import numpy as np
 import cv2

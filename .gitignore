@@ -9,10 +9,11 @@ examples/
 
 tests/data # -- large csv files 
 tests/benchmarks/res
+# tests/benchmarks/simulated_*
 
 docs/report.*
 !docs/report.pdf
 
 TODO.md
 
-tests/benchmarks/simulated_*
+test/

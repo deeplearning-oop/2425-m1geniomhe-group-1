@@ -1,13 +1,19 @@
 '''
+--------------------------------
 dataloader module: home of the DataLoader class
+--------------------------------
+
+This module contains the DataLoader class which is used to load data in batches from a dataset object. 
 '''
 
 
 import random
 import numpy as np
-seed=42
-random.seed(seed)
+# seed=42
+# random.seed(seed)
 
+import ann
+from ann import tensor
 from tensor import *
 from dataset import *
 
@@ -129,13 +135,6 @@ class DataLoader:
             nd_target = np.stack(nd_target_list, axis=0) 
             target=Tensor(nd_target)
 
-            # print('<> tetsing the dataloader')
-            # print('     indices:', indices)
-            # print('     tensor_data_list:', tensor_data_list)
-            # print('     tensor_data list item shape :', tensor_data_list[0].shape)
-            # print('     tensor_data.shape:', tensor_data.shape)  
-            # print('     nd_data.shape:', nd_data.shape) 
-
             yield tensor_data, target
 
     def __len__(self):
@@ -144,4 +143,5 @@ class DataLoader:
     def __getitem__(self, index):
         raise TypeError('DataLoader object is not indexable')
             
-
+def __main__():
+    t=Tensor()

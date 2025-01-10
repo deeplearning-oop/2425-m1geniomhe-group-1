@@ -1,3 +1,5 @@
 numpy==2.0.2 # -- tensor operations and numerical computations
 opencv-contrib-python==4.10.0.84 # -- image processing based on OpenCV (c++ library)
-
+matplotlib==3.4.3 # -- plotting and visualization  
+scikit-learn==1.5.2 # -- particulalry fro train-test split until we implement it ourselves in processing.py maybe
+pandas==2.2.3 # -- data manipulation and analysis
