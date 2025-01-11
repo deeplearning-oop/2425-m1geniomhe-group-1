@@ -16,7 +16,7 @@ setup(
     description='Learning OOP the Hard Way: Modeling and Implementing a Deep Learning Library',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='Yazid Hoblos, Joelle Assys, Rayane Adam',
+    author='Yazid Hoblos, Joelle Assy, Rayane Adam',
     url='https://github.com/deeplearning-oop/2425-m1geniomhe-group-1/',
     license='MIT',
     packages=find_packages(),

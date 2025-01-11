@@ -7,6 +7,8 @@
     * [ ] allow pip install  
     * [x] add setup.py
     * [x] add requirements.txt
+    * [ ] add wiki page
+
 * tests:
     * [ ] Add more datasets 
     * [ ] run on simulated and gene expression data 
