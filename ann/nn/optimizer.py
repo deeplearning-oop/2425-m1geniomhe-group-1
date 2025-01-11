@@ -1,3 +1,12 @@
+__doc__='''
+-------------------
+Optimizer module
+-------------------
+This module contains the Optimizer class which is used to optimize the model's parameters by updating them based on the gradients of the loss function
+'''
+
+__all__=['Optimizer','SGD']
+
 from abc import ABC, abstractmethod
 
 class Optimizer(ABC):

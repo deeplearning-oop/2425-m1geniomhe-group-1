@@ -16,8 +16,8 @@ p.s. these types will be aliased so tehy can be accessed by tehir names from all
     and they will be used to convert data to the specified data type through numpy
 
 ```python
->>> import ouur_library as torch_wannabe
->>> x=torch_wannabe.Tensor([1,2,3],dtype=torch_wannabe.float32)
+>>> import our_library as torch_wannw2222222222abe
+>>> x=torch_wannw2222222222abe.Tensor([1,2,3],dtype=torch_wannw2222222222abe.float32)
 # design exaclty identical to pytorch's ui
 ```
 

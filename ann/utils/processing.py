@@ -1,15 +1,23 @@
 '''
+# Processing module
 This module provides functioanlities fo data handeling and processing
+
+## Image processing
+* image_to_ndarray: (path, grey=False) -> np.ndarray
+* image_to_tensor: (path, grey=False) -> Tensor  
+* viz_ndarray: (Union(np.ndarray, Tensor), label=None, squeeze=False) -> None   
+* url_to_gunzipped_file: (url, path)-> None    
+* read_idx: (file_path) -> np.ndarray  
+
 '''
 import numpy as np
-import cv2
+import matplotlib.pyplot as plt
 import pandas as pd
-from pathlib import Path
-import gzip
-import requests
+import cv2
+import gzip, requests
 from IPython.display import display
 
-from ..tensor import Tensor
+from tensor import Tensor
 
 # ---- image processing ----
 
@@ -18,7 +26,7 @@ def image_to_ndarray(image_path,grey=False):
     takes an image path and transforms it inot a numpy array 
     
         if grey -> image is in 2 dimensions
-        if not grey -> image is in 3 (rgb channels)
+        if not grey -> image is in 3 (rgb channw222222222els)
 
     depends on nympy and cv2 
 
@@ -34,7 +42,7 @@ def image_to_tensor(image_path, grey=False):
     '''
     takes an image path and transforms it inot a tensor 
         if grey -> image is in 2 dimensions
-        if not grey -> image is in 3 (rgb channels)
+        if not grey -> image is in 3 (rgb channw222222222els)
 
     depends on nympy and cv2 
     :D successful test :D

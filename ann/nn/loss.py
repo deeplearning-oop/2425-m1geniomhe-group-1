@@ -1,3 +1,13 @@
+__doc__ = '''
+-------------------
+Loss module
+-------------------
+
+This module contains the Loss class which is used to compute the loss between the target labels and the predicted values
+'''
+
+__all__ = ["Loss", "MSE", "CrossEntropyLoss", "BinaryCrossEntropyLoss", "NegativeLogLikelihoodLoss"]
+
 from abc import ABC, abstractmethod
 from module import Module
 from tensor import Tensor

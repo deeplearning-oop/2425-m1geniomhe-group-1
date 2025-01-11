@@ -5,9 +5,9 @@
 - [x] **[setup.py](../setup.py)**: for packaging the library, saves version, dependencies and other metadata  
 - [x] **[requirements.txt](../requirements.txt)**: for installing dependencies  
 - [x] **[dev/](.)**: for development scripts and utilities including versioning and directory structure 
-    - [x] `set-pythonpath.sh`: for setting the python path to the library directory during developming to allow imports correctly, make sure you wun it though wither `source` or `.` to allow the changes to take effect in the current shell (saving $PYTHONPATH as a global variable)  
+    - [x] `set-pythonpath.sh`: for setting the python path to the library directory during developming to allow imports correctly, make sure you wun it though `source` to allow the changes to take effect in the current shell (saving $PYTHONPATH as a global variable)  
     ```bash
-    ./dev/set-pythonpath.sh ann/
+    source ./dev/set-pythonpath.sh 
     ```
     - [x] `update-version.sh`: for updating the version of the library, it prompts version input from user (x.y.z format where x is major, y is minor and z is patch) and updates the version number in [VERSION file](../VERSION) + description of updates in [CHANGELOG.md](./CHANGELOG.md)
 

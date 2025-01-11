@@ -1,3 +1,10 @@
+__doc__='''
+-----------------------
+Linear module
+-----------------------
+This module contains the Linear class which is used to create a linear layer in a neural network.
+'''
+
 import numpy as np
 from module import Module
 from parameter import Parameter

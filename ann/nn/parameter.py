@@ -1,3 +1,7 @@
+__doc__='''
+Parameter module housing the Parameter class which is used to store the parameters of the model (W and b) and is a child of the Tensor class
+'''
+
 from tensor import Tensor
 
 class Parameter(Tensor):

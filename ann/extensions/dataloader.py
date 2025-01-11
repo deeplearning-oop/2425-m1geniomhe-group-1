@@ -1,24 +1,20 @@
-'''
+__doc__ ='''
 --------------------------------
-dataloader module: home of the DataLoader class
+dataloader module: 
+    home of the DataLoader class
 --------------------------------
 
 This module contains the DataLoader class which is used to load data in batches from a dataset object. 
 '''
 
-
 import random
 import numpy as np
-# seed=42
-# random.seed(seed)
 
-import ann
-from ann import tensor
-from tensor import *
-from dataset import *
+from ann.tensor import *
+from ann.dataset import *
 
 class DataLoader:
-    '''DataLoader class
+    __doc__='''DataLoader class
     --------------------------------
     The purpose is to make an object out of the dataset that is split into batches and is iterable to be used in the training loop (even in the validation loop).
     

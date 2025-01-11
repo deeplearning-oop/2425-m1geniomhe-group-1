@@ -2,7 +2,7 @@
 This module provides useful functions that imitates torch's behavior and ui
 '''
 
-from ann.tensor import Tensor, float32, float64, int32, int64, uint8
+from tensor import Tensor, float32, float64, int32, int64, uint8
 
 def tensor(data, dtype=float32, requires_grad=False, is_leaf=False):
     '''

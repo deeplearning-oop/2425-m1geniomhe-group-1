@@ -1,3 +1,11 @@
+__doc__='''
+-------------------
+Module Module (actual name :p)
+-------------------
+
+This module contains the Module class which is the base class for all the layers and activation functions and loss and user defined models in the neural network architecture
+'''
+
 from abc import ABC, abstractmethod
 from parameter import Parameter
 

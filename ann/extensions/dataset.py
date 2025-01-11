@@ -1,17 +1,10 @@
-'''
-Dataset module
----------------
+__doc__='''
+-----------------------------------
+          Dataset module
+-----------------------------------
 
 This module contains implementation of class Dataset which is used to load and preprocess example datasets like MNIST  
 Hence, contains implementation of children classes like MNIST
-
-Some useful functiosn are also implemented here or imported from transform like:  
-* image_to_ndarray: (path, grey=False) -> np.ndarray
-* image_to_tensor: (path, grey=False) -> Tensor  
-* viz_ndarray: (Union(np.ndarray, Tensor), label=None, squeeze=False) -> None   
-* url_to_gunzipped_file: (url, path)-> None    
-* read_idx: (file_path) -> np.ndarray  
-* beautify_repr: (obj:dataset.Dataset) -> None
 
 These helpers are in here because by default behavior of MNIST in pytorch is to download the dataset, store it and gets it directly in tensor form with dtype=torch.uint8  
 We are imitating thus the same behavior by downloading, storing and reading images in idx format and transforming them into np arrays of type uint8 then storing them in Tensor objects
@@ -19,32 +12,23 @@ We are imitating thus the same behavior by downloading, storing and reading imag
 Classes:  
 * Dataset: (ABC)  
     * MNIST: (Dataset)  
-
-
 '''
 
+__all__ = ["Dataset", "TensorDataset", "MNIST"]
+
 from abc import ABC, abstractmethod
+from pathlib import Path
+from IPython.display import display
 
 import matplotlib.pyplot as plt
 import numpy as np
-# import cv2
 import pandas as pd
 
-from pathlib import Path
-# import os
-# import gzip
-# import requests
-from IPython.display import display
-
-from ann import tensor
-from tensor import Tensor
-
-
-# def validate_path(path:str):
-#     '''takes a path, if not present creates it'''
+from ann.tensor import Tensor
+from ann.utils.processing import image_to_ndarray, image_to_tensor, viz_ndarray, url_to_gunzipped_file, read_idx
 
 class Dataset(ABC):
-    '''
+    __doc__='''
     Parent Class for all datasets (abstract)
     -------------------------------------
 
@@ -91,7 +75,6 @@ class Dataset(ABC):
 
 
     def __repr__(self):
-        beautify_repr(self)
         return f'''{self.__class__.__name__} object: (
     root: {self.__root},
     transform: {self.__transform},
@@ -99,7 +82,7 @@ class Dataset(ABC):
 )'''
 
 class TensorDataset(Dataset):
-    '''Class to create a dataset from tensors
+    __doc__='''Class to create a dataset from tensors
     ---------------------------------------
 
     Having X and y tensors, this class will create a dataset object that can be used for training or testing    
@@ -180,10 +163,10 @@ class TensorDataset(Dataset):
     
 
 class MNIST(Dataset):
-    '''
+    __doc__='''
     Class for MNIST dataset
     ------------------------------
-    ~ https://yann.lecun.com/exdb/mnist/
+    ~ https://yannw222222222.lecun.com/exdb/mnist/
 
     we will use this mirror: ossci-datasets.s3.amazonaws.com because it's the only one working  
 
@@ -323,11 +306,11 @@ class MNIST(Dataset):
         we will not access the dataset items through indexing (that calls __getattr__)
         but we will use teh exact code of accessing the item as in that method adn do it for each (tensor image,target) tuple
 
-        main reason is taht we allowed for plotting the image in __getitem__ and we dont wanna plot every image when we iterate
+        main reason is taht we allowed for plotting the image in __getitem__ and we dont wannw222222222a plot every image when we iterate
         '''
         for index in range(len(self)):
             # yield self[i] 
-            # -- we wont do this bcs by default we're plotting teh image and we dont wanna plot everyhting when we iterate
+            # -- we wont do this bcs by default we're plotting teh image and we dont wannw222222222a plot everyhting when we iterate
             # -- instead we'll write __getitem__ implementation without plotting
 
             data=self.__data[index]
@@ -370,27 +353,3 @@ class MNIST(Dataset):
     def __repr__(self):
         return super().__repr__()
     
-    
-# -- for testing
-# from torchvision import datasets  
-# import torch      
-
-if __name__=='__main__':
-
-    x=Tensor([[1,2,3],[4,5,6]])
-    y=Tensor([1,0])
-
-    my_dataset=TensorDataset(X=x, y=y)
-    print(my_dataset)
-    for i,j in my_dataset:
-        print(i,j)
-
-    print('####################################')
-
-    # my_train_data=MNIST(root='data',train=True)
-    # my_train_ndarray=my_train_data.data.data
-    # my_train_in_tensor=torch.tensor(my_train_ndarray)
-    # torch_train_data=datasets.MNIST(root='data',train=True,download=True)
-    # print(type(torch_train_data.data))
-    # print(torch.all(my_train_in_tensor==torch_train_data.data))
-    # # tensor(True)

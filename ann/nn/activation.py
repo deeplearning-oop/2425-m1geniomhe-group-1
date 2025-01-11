@@ -1,7 +1,17 @@
+__doc__='''
+-----------------------
+Activation module
+-----------------------
+This module contains the activation functions used in neural networks
+Including: ReLU, Softmax, Sigmoid
+'''
+
+__all__ = ["Activation", "ReLU", "Softmax", "Sigmoid"]
+
 from abc import ABC, abstractmethod
+import numpy as np
 from module import Module
 from tensor import Tensor
-import numpy as np
 
 class Activation(Module):
     """

@@ -1,5 +1,8 @@
 '''
 This module provides functionalities to generate data for testing and visualization purposes.
+
+* generate_data: (choice, n_samples=500, noise=0.1, grid_size=4) -> Tuple[np.ndarray, np.ndarray]
+    decorated with @viz_generated_data, it will return X, y and plot the data of the choice
 '''
 
 import numpy as np

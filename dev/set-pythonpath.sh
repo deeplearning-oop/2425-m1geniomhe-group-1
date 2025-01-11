@@ -18,13 +18,17 @@ else
 fi
 
 # -- check if it's a valid python package
-if [ ! -f "$PATH_TO_EXPORT/__init__.py" ]; then
-    echo "<<< '$PATH_TO_EXPORT' is not a valid python package, make sure __init__.py exists"
-    exit 1
-fi
+# if [ ! -f "$PATH_TO_EXPORT/__init__.py" ]; then
+#     echo "<<< '$PATH_TO_EXPORT' is not a valid python package, make sure __init__.py exists"
+#     exit 1
+# fi
+# we wont do this anymore bcs we're aiming to add the repo root path to be able to imitate the library behavior for users (so exporting the root path and not ann/)
 
 # -- check if the path is already in PYTHONPATH
-if [[ ":$PYTHONPATH:" != *":$PATH_TO_EXPORT:"* ]]; then
+if [ -z "$PYTHONPATH" ]; then
+    export PYTHONPATH="$PATH_TO_EXPORT"
+    echo ">>> empty PYTHONPATH is exported with '$PATH_TO_EXPORT'"
+elif [[ ":$PYTHONPATH:" != *":$PATH_TO_EXPORT:"* ]]; then
     export PYTHONPATH="$PATH_TO_EXPORT:$PYTHONPATH"
     echo ">>> PYTHONPATH is exported with '$PATH_TO_EXPORT'"
 else
