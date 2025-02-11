@@ -7,7 +7,7 @@ This module contains the Module class which is the base class for all the layers
 '''
 
 from abc import ABC, abstractmethod
-from parameter import Parameter
+from ann.nn.parameter import Parameter
 
 class Module(ABC):
     

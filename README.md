@@ -16,19 +16,23 @@ For a more detailed description refer to the [docs readme](./docs/readme.md).
 [^1]: https://pytorch.org/
 
 ## Installation
-_under development_
 
-To install and test the library, you can clone the repository and run the following command:
+To install and test the library, install using pip:
 ```bash
-git clone <repository-url>
-cd <repository-folder>
+pip install git+https://github.com/deeplearning-oop/2425-m1geniomhe-group-1.git
 ```
-And install dependencies:
-```bash
-pip install -r requirements.txt
+It will install all dependencies found in [`requirements.txt`](requirements.txt), and the library will be available for use through a simple import from the Python environment where it was installed:
+
+```python
+import ann
+help(ann) # this will display a short description of the modules and classes available
 ```
 
-For later use, you can install the library using pip, usage will be available when it's fully tested.
+For to train an example model, you can run this code [`example/MNIST_model.py`](example/MNIST_model.py) that trains a simple model on the MNIST dataset.
+
+```bash
+python example/MNIST_model.py
+```
 
 ## Project proposal
 Take a look at the project description proposed to the students in [2425-project-proposal.pdf](2425-project-proposal.pdf).
@@ -85,6 +89,8 @@ The overall directory structure is as follows (dating 08/01/2025):
 │   │   └── v0-light.jpg
 │   ├── readme.md
 │   └── report.pdf
+├── example/
+│   └── MNIST_model.py
 ├── requirements.txt
 ├── setup.py
 ├── src/
@@ -100,14 +106,17 @@ The overall directory structure is as follows (dating 08/01/2025):
 │   └── transforms.py
 └── tests/
 |   ├── benchmarks/
-|   │   ├── MNIST.py
+|   |   ├── gene_expression.py
+|   │   └── MNIST.py
+|   ├── unit/  # -- unti tests in classes and comparison with pytorch 
+|   |   ├── vision_transforms.ipynb
+|   │   └── vision.ipynb
+|   ├── mocks/  # -- checking consistency with pytorch 
 |   |   ├── simulated_linear.ipynb
 |   |   ├── simulated_circular.ipynb
 |   |   ├── simulated_checkerboard.ipynb
 |   │   └── simulated_spiral.ipynb
-|   ├── mocks/  # -- checking consistency with pytorch 
-|   │   └── vision.ipynb
-|   └── models/ # -- main tested models
+|   └── backup/ 
 |       ├── test_simulation.py
 |       └── test_with_dataloaders.py
 └── utils

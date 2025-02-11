@@ -17,7 +17,7 @@ import cv2
 import gzip, requests
 from IPython.display import display
 
-from tensor import Tensor
+from ann.tensor import Tensor
 
 # ---- image processing ----
 
@@ -164,3 +164,78 @@ def beautify_repr(obj):
     data=dictify_dataset(obj)
     df=dfy_data(data)
     display(df)
+
+# -- nromalizations
+
+def normalize_tensor(tensor, mean=None, std=None):
+    """
+    Normalizes a tensor using the provided mean and standard deviation, 
+    the default behavior if no mean or std is provided is to use the mean and std of the tensor
+    (either both present or both not present)
+    
+    Parameters:
+        tensor (np.ndarray or Tensor): The array to be normalized
+        mean (float): The mean to normalize with (optional)
+        std (float): The standard deviation to normalize with (optional)
+    
+    Returns:
+        np.ndarray: The normalized array
+
+    testing
+    """
+    if mean is None:
+        mean = np.mean(tensor.data)
+    if std is None:
+        std = np.std(tensor.data)
+    
+    if std == 0:
+        raise ValueError("Standard deviation cannot be zero while normalizing")
+
+    if type(tensor) == Tensor:
+        tensor = tensor.data
+    
+    normalized_array = (tensor - mean) / std
+    normalized_tensor=Tensor(normalized_array)
+    return normalized_tensor
+
+def standardize_tensor(tensor):
+    """
+    Standardizes a tensor by subtracting the mean and dividing by the standard deviation,
+    this is the normalize_tensor function with mean and std set to None (default)
+        => output will have a mean of 0 and a standard deviation of 1
+    
+    Parameters:
+        array (np.ndarray): The array to be standardized.
+    
+    Returns:
+        np.ndarray: The standardized array
+    """
+    return normalize_tensor(tensor)
+
+
+def min_max_normalize_tensor(tensor, min, max):
+    '''
+    Normalizes a tensor to the range [min, max]
+
+    Parameters:
+        tensor (np.ndarray or Tensor): The array to be normalized.
+        min (float): The minimum value to normalize to.
+        max (float): The maximum value to normalize to.
+    
+    Returns:
+        np.ndarray: The normalized array
+    '''
+    if min >= max:
+        raise ValueError("min must be less than max")
+    
+    if min is None:
+        min = np.min(tensor)
+    if max is None:
+        max = np.max(tensor)
+
+    if type(tensor) == Tensor:
+        tensor = tensor.data
+    
+    normalized_array = (tensor - min) / (max - min)
+    normalized_tensor=Tensor(normalized_array)
+    return normalized_tensor

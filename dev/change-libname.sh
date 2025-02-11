@@ -6,9 +6,10 @@
     # from ann import ... -> from ann2 import ...
     # from ann. import ... -> from ann2. import ..
 #it will also change its name in setup.py
+# Usage: ./dev/change-libname.sh
 
 # -- take lib path from user
-read -p ">>> Enter the library path: " LIB_PATH
+read -p ">>> Enter the library relative path: " LIB_PATH
 LIB_PATH=$(pwd)/$LIB_PATH
 LIB_PATH=$(realpath "$LIB_PATH")
 LIB_NAME=$(basename "$LIB_PATH")

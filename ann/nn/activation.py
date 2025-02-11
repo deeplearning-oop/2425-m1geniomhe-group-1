@@ -10,8 +10,8 @@ __all__ = ["Activation", "ReLU", "Softmax", "Sigmoid"]
 
 from abc import ABC, abstractmethod
 import numpy as np
-from module import Module
-from tensor import Tensor
+from ann.nn.module import Module
+from ann.tensor import Tensor
 
 class Activation(Module):
     """

@@ -18,7 +18,9 @@ ann/*/__pycache__
 ann/*/*.pyc
 ann/__pycache__  
 ann/*.pyc  
+ann.egg-info
 
+tests/mocks
 # TODO.md
 
 test/

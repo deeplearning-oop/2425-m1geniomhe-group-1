@@ -4,5 +4,5 @@ from .transforms import Transform
 
 __all__ = ["DataLoader", "Dataset", "Transform"]
 
-from annw222222222.utils import functions, processing
-from annw222222222 import tensor
+from ann.utils import functions, processing
+from ann import tensor

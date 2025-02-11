@@ -4,7 +4,7 @@
     * [ ] Add transformations for qualitative data and add DataType accordingly  
     * [ ] Add transformations to allow for data augmentation maybe 
 * package:  
-    * [ ] allow pip install  
+    * [x] allow pip install  
     * [x] add setup.py
     * [x] add requirements.txt
     * [ ] add wiki page

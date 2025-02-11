@@ -42,3 +42,8 @@
 - Library structured and structured
 - Added setup.py and tests
 
+## [1.0.1] - 2025-02-11
+- made it pip installable
+- added test example for users
+- reorganized the repo structure
+

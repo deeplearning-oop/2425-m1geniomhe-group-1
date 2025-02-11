@@ -6,8 +6,8 @@ This module contains the Linear class which is used to create a linear layer in 
 '''
 
 import numpy as np
-from module import Module
-from parameter import Parameter
+from ann.nn.module import Module
+from ann.nn.parameter import Parameter
 
 class Linear(Module):
     

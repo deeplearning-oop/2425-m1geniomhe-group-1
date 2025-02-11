@@ -9,8 +9,8 @@ This module contains the Loss class which is used to compute the loss between th
 __all__ = ["Loss", "MSE", "CrossEntropyLoss", "BinaryCrossEntropyLoss", "NegativeLogLikelihoodLoss"]
 
 from abc import ABC, abstractmethod
-from module import Module
-from tensor import Tensor
+from ann.nn.module import Module
+from ann.tensor import Tensor
 import numpy as np
 
 class Loss(Module):

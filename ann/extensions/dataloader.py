@@ -11,7 +11,7 @@ import random
 import numpy as np
 
 from ann.tensor import *
-from ann.dataset import *
+from ann.extensions.dataset import *
 
 class DataLoader:
     __doc__='''DataLoader class

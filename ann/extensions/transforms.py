@@ -35,7 +35,7 @@ import numpy as np
 import PIL
 from abc import ABC, abstractmethod
 from ann.tensor import Tensor
-from ann.utils.processing import image_to_ndarray, image_to_tensor, normalize_tensor, standardize_tensor, min_max_normalize_tensor
+from ann.utils.processing import normalize_tensor, min_max_normalize_tensor
 
 valid_transforms = ['ToTensor', 'Normalize', 'Standardize', 'MinMaxNormalize', 'Compose']
 

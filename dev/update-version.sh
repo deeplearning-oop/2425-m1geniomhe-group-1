@@ -78,8 +78,8 @@ echo "Updated VERSION to $new_version."
 #     echo "Created docs directory."
 # fi
 
-# Add entry to utils/changelog.md
-changelog_file="utils/changelog.md"
+# Add entry to dev/changelog.md
+changelog_file="dev/changelog.md"
 if [[ ! -f $changelog_file ]]; then
     echo "# Changelog" > "$changelog_file"
 fi
