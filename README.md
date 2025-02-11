@@ -1,5 +1,8 @@
 # OOP the hard way: Deep Learning Library
-_This is the project for the Object Oriented Programming course at the University of Paris-Saclay, M1 GENIOMHE: 2425-m1geniomhe-group-1_
+_This is the project for the Object Oriented Programming course at the University of Paris-Saclay, M1 GENIOMHE: 2425-m1geniomhe-group-1_  
+_Check out this quick demo:_   <a href="https://colab.research.google.com/github/deeplearning-oop/2425-m1geniomhe-group-1/blob/main/example/MNIST_model.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open Project in colab"/></a> 
+
+[![GitHub](https://img.shields.io/badge/GitHub-deeplearning_oop_org-black)](https://github.com/deeplearning-oop/2425-m1geniomhe-group-1)[![Version](https://img.shields.io/badge/version-1.0.1-grassgreen)](./dev/changelog.md)  ![Build](https://img.shields.io/badge/installation-pip-brightgreen) [![Python](https://img.shields.io/badge/python-3.+-blue)](https://www.python.org/downloads/release/python-390/)  [![License](https://img.shields.io/badge/license-MIT-orange)](./LICENSE.md)  [![Submission](https://img.shields.io/badge/submission-successful_:\)-yellow)](./docs/readme.md)
 
 ## Description
 This project is a deep learning library that allows the user to create and train artificial neural networks. The library is implemented in Python and uses the NumPy library for matrix operations. The aim of this project is to perform the task using object-oriented programming principles and design patterns. The user-interface and performance were consequently compared to the PyTorch[^1] library. The library relies on gradient calculation and backpropagation through a computational graph. The library supports the following features:
@@ -24,70 +27,10 @@ pip install git+https://github.com/deeplearning-oop/2425-m1geniomhe-group-1.git
 It will install all dependencies found in [`requirements.txt`](requirements.txt), and the library will be available for use through a simple import from the Python environment where it was installed:
 
 ```python
-import ann
-help(ann) # this will display a short description of the modules and classes available
+import che3le
+help(che3le) # this will display a short description of the modules and classes available
 ```
 
-For to train an example model, you can run this code [`example/MNIST_model.py`](example/MNIST_model.py) that trains a simple model on the MNIST dataset.
-
-```bash
-python example/MNIST_model.py
-```
-
-If its set normally, a similar output will be displayed:
-```text
->>> File downloaded successfully as 'data/MNIST/raw/t10k-labels-idx1-ubyte.gz'.
- >>> File downloaded successfully as 'data/MNIST/raw/train-images-idx3-ubyte.gz'.
- >>> File downloaded successfully as 'data/MNIST/raw/t10k-images-idx3-ubyte.gz'.
- >>> File downloaded successfully as 'data/MNIST/raw/train-labels-idx1-ubyte.gz'.
->>> applying ToTensor()...
- :O already a tensor
->>> applying Standardize(inplace=True)...
->>> [ToTensor(), Standardize(inplace=True)] applied successfully <<<
- >>> data/MNIST/raw/t10k-labels-idx1-ubyte.gz already exists <<<
- >>> data/MNIST/raw/t10k-labels-idx1-ubyte already exists <<<
- >>> data/MNIST/raw/train-images-idx3-ubyte.gz already exists <<<
- >>> data/MNIST/raw/train-images-idx3-ubyte already exists <<<
- >>> data/MNIST/raw/t10k-images-idx3-ubyte.gz already exists <<<
- >>> data/MNIST/raw/t10k-images-idx3-ubyte already exists <<<
- >>> data/MNIST/raw/train-labels-idx1-ubyte.gz already exists <<<
- >>> data/MNIST/raw/train-labels-idx1-ubyte already exists <<<
->>> applying ToTensor()...
- :O already a tensor
->>> applying Standardize(inplace=True)...
->>> [ToTensor(), Standardize(inplace=True)] applied successfully <<<
-Run 1 / 10:
-Accuracy for run 1: 89.00%
-------------------
-Run 2 / 10:
-Accuracy for run 2: 92.41%
-------------------
-Run 3 / 10:
-Accuracy for run 3: 93.67%
-------------------
-Run 4 / 10:
-Accuracy for run 4: 93.84%
-------------------
-Run 5 / 10:
-Accuracy for run 5: 94.33%
-------------------
-Run 6 / 10:
-Accuracy for run 6: 94.82%
-------------------
-Run 7 / 10:
-Accuracy for run 7: 94.53%
-------------------
-Run 8 / 10:
-Accuracy for run 8: 95.16%
-------------------
-Run 9 / 10:
-Accuracy for run 9: 95.15%
-------------------
-Run 10 / 10:
-Accuracy for run 10: 95.39%
-------------------
-Average Accuracy over 10 runs: 93.83%
-``` 
 
 ## Project proposal
 Take a look at the project description proposed to the students in [2425-project-proposal.pdf](2425-project-proposal.pdf).
@@ -180,6 +123,16 @@ The overall directory structure is as follows (dating 08/01/2025):
     ├── readme.tree
     └── update-version.sh
 ```
+
+## Demo
+
+Kindly find demos in the [example](./example) folder.
+If you install the library locally, you can run the following script to train a simple model on the MNIST dataset:
+```bash
+python example/MNIST_model.py
+```
+
+You can test it as well on [Google Colab by clicking on this link]() and running the notebook.
 
 ## Authors
 * Joelle ASSY ([@joelleas](https://github.com/joelleas))

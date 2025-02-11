@@ -3,6 +3,7 @@ setting up our library
 '''
 
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
 
 with open("VERSION") as version_file:
     version = version_file.read().strip()
