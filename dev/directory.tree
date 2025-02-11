@@ -4,15 +4,33 @@
 ├── README.md
 ├── TODO.md
 ├── VERSION
-├── ann/                    # -- the python library that is set up by setup.py (pip install)
+├── ann
 │   ├── __init__.py
-│   ├── extensions/
+│   ├── __pycache__
+│   │   ├── __init__.cpython-310.pyc
+│   │   ├── tensor.cpython-310.pyc
+│   │   └── tensor.cpython-312.pyc
+│   ├── extensions
 │   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-310.pyc
+│   │   │   ├── dataloader.cpython-310.pyc
+│   │   │   ├── dataset.cpython-310.pyc
+│   │   │   ├── dataset.cpython-312.pyc
+│   │   │   └── transforms.cpython-310.pyc
 │   │   ├── dataloader.py
 │   │   ├── dataset.py
 │   │   └── transforms.py
-│   ├── nn/
+│   ├── nn
 │   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-310.pyc
+│   │   │   ├── activation.cpython-310.pyc
+│   │   │   ├── linear.cpython-310.pyc
+│   │   │   ├── loss.cpython-310.pyc
+│   │   │   ├── module.cpython-310.pyc
+│   │   │   ├── optimizer.cpython-310.pyc
+│   │   │   └── parameter.cpython-310.pyc
 │   │   ├── activation.py
 │   │   ├── linear.py
 │   │   ├── loss.py
@@ -20,48 +38,229 @@
 │   │   ├── optimizer.py
 │   │   └── parameter.py
 │   ├── tensor.py
-│   └── utils/
+│   └── utils
 │       ├── __init__.py
+│       ├── __pycache__
+│       │   ├── __init__.cpython-310.pyc
+│       │   ├── functions.cpython-310.pyc
+│       │   └── processing.cpython-310.pyc
+│       ├── evaluation.py
 │       ├── functions.py
 │       ├── processing.py
 │       ├── simulation.py
 │       └── validation.py
-├── assets/
+├── ann.egg-info
+│   ├── PKG-INFO
+│   ├── SOURCES.txt
+│   ├── dependency_links.txt
+│   ├── requires.txt
+│   └── top_level.txt
+├── assets
 │   ├── comparison1.png
 │   ├── comparison2.png
 │   ├── comparison3.png
 │   ├── comparison4.png
 │   └── data_viz.png
-├── docs/
-│   ├── diagrams/
+├── dev
+│   ├── change-libname.sh
+│   ├── changelog.md
+│   ├── directory.tree
+│   ├── make-global.sh
+│   ├── readme.md
+│   ├── set-pythonpath.sh
+│   └── update-version.sh
+├── docs
+│   ├── diagrams
 │   │   ├── class-v1.jpg
 │   │   ├── object-v1.jpg
 │   │   ├── v0-dark.jpg
 │   │   └── v0-light.jpg
+│   ├── presentation.pdf
 │   ├── readme.md
-│   └── report.pdf
+│   ├── report.md
+│   ├── report.pdf
+│   └── report.rmd
+├── example
+│   └── MNIST_model.py
+├── examples
+│   ├──  getting_started.md
+│   ├── MNIST.csv
+│   ├── MNIST_wannabe.csv
+│   ├── __pycache__
+│   │   └── tensor.cpython-312.pyc
+│   ├── __tensor.py
+│   ├── _tensor.py
+│   ├── ann
+│   │   ├── extensions
+│   │   │   └── transforms.py
+│   │   ├── nn
+│   │   │   └── module.py
+│   │   ├── tensor.py
+│   │   └── utils
+│   ├── assets
+│   │   └── test
+│   │       ├── t10k-labels-idx1-ubyte
+│   │       ├── t10k-labels-idx1-ubyte.gz
+│   │       └── train-images-idx3-ubyte.gz
+│   ├── backup
+│   │   ├── HERE
+│   │   │   ├── data_simulation.py
+│   │   │   ├── readme.md
+│   │   │   └── tests
+│   │   │       ├── simulated_checkerboard.ipynb
+│   │   │       ├── simulated_circular.ipynb
+│   │   │       ├── simulated_examples.ipynb
+│   │   │       ├── simulated_linear.ipynb
+│   │   │       └── simulated_spiral.ipynb
+│   │   ├── __pycache__
+│   │   │   ├── dataloader.cpython-312.pyc
+│   │   │   ├── dataset.cpython-312.pyc
+│   │   │   ├── tensor.cpython-312.pyc
+│   │   │   └── transforms.cpython-312.pyc
+│   │   ├── data
+│   │   │   ├── MNIST
+│   │   │   │   └── raw
+│   │   │   │       ├── t10k-images-idx3-ubyte
+│   │   │   │       ├── t10k-images-idx3-ubyte.gz
+│   │   │   │       ├── t10k-labels-idx1-ubyte
+│   │   │   │       ├── t10k-labels-idx1-ubyte.gz
+│   │   │   │       ├── train-images-idx3-ubyte
+│   │   │   │       ├── train-images-idx3-ubyte.gz
+│   │   │   │       ├── train-labels-idx1-ubyte
+│   │   │   │       └── train-labels-idx1-ubyte.gz
+│   │   │   └── MNIST.csv
+│   │   ├── dataloader.py
+│   │   ├── dataset.py
+│   │   ├── old_versions
+│   │   │   └── tensor.py
+│   │   ├── tensor.py
+│   │   ├── test
+│   │   │   ├── __init__.py
+│   │   │   ├── simulated_examples.ipynb
+│   │   │   ├── test.py
+│   │   │   ├── test_nn.py
+│   │   │   ├── test_simulation.py
+│   │   │   └── test_with_dataloaders.py
+│   │   ├── transforms.py
+│   │   ├── utils
+│   │   │   └── data_simulation.py
+│   │   └── vision_transforms.ipynb
+│   ├── dataloader.py
+│   ├── library_evaluation.py
+│   ├── mocks
+│   │   ├── tensor.ipynb
+│   │   ├── tests
+│   │   │   ├── __init__.py
+│   │   │   ├── compare.py
+│   │   │   ├── comparisons.ipynb
+│   │   │   ├── simulated_checkerboard.ipynb
+│   │   │   ├── simulated_circular.ipynb
+│   │   │   ├── simulated_examples.ipynb
+│   │   │   ├── simulated_linear.ipynb
+│   │   │   ├── simulated_spiral.ipynb
+│   │   │   ├── test.py
+│   │   │   ├── test_nn.py
+│   │   │   ├── test_simulation.py
+│   │   │   └── test_with_dataloaders.py
+│   │   └── vision.ipynb
+│   ├── modules
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   └── tensor.cpython-312.pyc
+│   │   ├── dataset.py
+│   │   └── tensor.py
+│   ├── neural_network.ipynb
+│   ├── notebook
+│   │   ├── 1_pytorch_example.ipynb
+│   │   ├── data
+│   │   │   └── MNIST
+│   │   │       └── raw
+│   │   │           ├── t10k-images-idx3-ubyte
+│   │   │           ├── t10k-images-idx3-ubyte.gz
+│   │   │           ├── t10k-labels-idx1-ubyte
+│   │   │           ├── t10k-labels-idx1-ubyte.gz
+│   │   │           ├── train-images-idx3-ubyte
+│   │   │           ├── train-images-idx3-ubyte.gz
+│   │   │           ├── train-labels-idx1-ubyte
+│   │   │           └── train-labels-idx1-ubyte.gz
+│   │   └── tensor.ipynb
+│   ├── notebooks
+│   │   ├── dataset.ipynb
+│   │   ├── parameters.ipynb
+│   │   └── test.ipynb
+│   ├── output.csv
+│   ├── readme.html
+│   ├── readme.md
+│   ├── report.pdf
+│   ├── template.tex
+│   ├── tensor.py
+│   ├── test
+│   │   ├── __init__.py
+│   │   ├── dataloader.py
+│   │   ├── dataset.py
+│   │   ├── ibm-nn
+│   │   ├── ibm-nn.json
+│   │   ├── ibm-nn.png
+│   │   ├── tensor.py
+│   │   ├── tensor_joelle.ipynb
+│   │   └── tensor_yazid.ipynb
+│   └── utils
+│       ├── image_conversion.sh
+│       └── setup.py
 ├── requirements.txt
 ├── setup.py
-├── src/
+├── src
+│   ├── __pycache__
+│   │   ├── activation.cpython-312.pyc
+│   │   ├── data_simulation.cpython-312.pyc
+│   │   ├── dataloader.cpython-312.pyc
+│   │   ├── dataset.cpython-312.pyc
+│   │   ├── linear.cpython-312.pyc
+│   │   ├── loss.cpython-312.pyc
+│   │   ├── module.cpython-312.pyc
+│   │   ├── optimizer.cpython-312.pyc
+│   │   ├── parameter.cpython-312.pyc
+│   │   ├── tensor.cpython-312.pyc
+│   │   └── transforms.cpython-312.pyc
 │   ├── activation.py
+│   ├── data
+│   │   └── MNIST
+│   │       └── raw
+│   │           ├── t10k-images-idx3-ubyte
+│   │           ├── t10k-images-idx3-ubyte.gz
+│   │           ├── t10k-labels-idx1-ubyte
+│   │           ├── t10k-labels-idx1-ubyte.gz
+│   │           ├── train-images-idx3-ubyte
+│   │           ├── train-images-idx3-ubyte.gz
+│   │           ├── train-labels-idx1-ubyte
+│   │           └── train-labels-idx1-ubyte.gz
+│   ├── data_simulation.py
 │   ├── dataloader.py
 │   ├── dataset.py
+│   ├── linear.py
+│   ├── loss.py
+│   ├── module.py
+│   ├── optimizer.py
+│   ├── parameter.py
 │   ├── tensor.py
+│   ├── test
+│   │   ├── accuracies.csv
+│   │   ├── comparisons.ipynb
+│   │   ├── data_simulation.py
+│   │   └── vision.ipynb
 │   └── transforms.py
-└── tests/
-|   ├── benchmarks/
-|   │   ├── MNIST.py
-|   |   ├── simulated_linear.ipynb
-|   |   ├── simulated_circular.ipynb
-|   |   ├── simulated_checkerboard.ipynb
-|   │   └── simulated_spiral.ipynb
-|   ├── mocks/
-|   │   └── vision.ipynb
-|   └── models/
-|       ├── test_simulation.py
-|       └── test_with_dataloaders.py
-└── utils
-    ├── changelog.md
-    ├── make-global.sh
-    ├── readme.tree
-    └── update-version.sh
+└── tests
+    ├── backup
+    │   ├── test_simulation.py
+    │   └── test_with_dataloaders.py
+    ├── benchmarks
+    │   ├── MNIST.py
+    │   ├── gene_expression.py
+    │   └── res
+    │       └── gene_expression
+    ├── readme.md
+    └── unit
+        ├── vision.ipynb
+        └── vision_transforms.ipynb
+
+55 directories, 208 files

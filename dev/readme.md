@@ -75,6 +75,45 @@ Installing collected packages: pytz, tzdata, threadpoolctl, python-dateutil, pil
 Successfully installed ann cycler-0.12.1 joblib-1.4.2 kiwisolver-1.4.8 matplotlib-3.4.3 numpy-2.0.2 opencv-contrib-python-4.10.0.84 pandas-2.2.3 pillow-11.1.0 python-dateutil-2.9.0.post0 pytz-2025.1 scikit-learn-1.5.2 scipy-1.15.1 threadpoolctl-3.5.0 tzdata-2025.1
 ```
 
+> [!NOTE]
+changed the library name from `ann` to `che3le`, this action is reversible anytime by running `./dev/change-libname.sh` script. However, in order for the example test to wrk need to manually change the imports in the `example/MNIST_model.py` file from `che3le` to whichever name is set for the library. 
+
+```bash
+./dev/change-libname.sh 
+```
+
+```text
+>>> Enter the library relative path: ann
+>>> Enter the new library name: che3le
+
+>>> Changing library name from 'ann' to 'che3le'
+
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/extensions/dataloader.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/extensions/dataset.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/extensions/transforms.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/extensions/__init__.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/nn/activation.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/nn/linear.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/nn/loss.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/nn/module.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/nn/optimizer.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/nn/parameter.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/nn/__init__.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/tensor.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/utils/evaluation.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/utils/functions.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/utils/processing.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/utils/simulation.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/utils/validation.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/utils/__init__.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/ann/__init__.py' is updated
+  >>> '/mnt/g/my_stuff/masters/saclay/courses/M1/Object-Orietnted-Programming/project/setup.py' is updated
+
+ >>> Library name is updated from 'ann' to 'che3le' <<<
+```
+
+(che3learn is an interesting name)
+
 
 ## Resources
 

@@ -1,12 +1,12 @@
-from ann.nn.module import Module
-from ann.nn.linear import Linear
-from ann.nn.optimizer import SGD
-from ann.nn.loss import CrossEntropyLoss
-from ann.nn.activation import ReLU, Softmax
+from che3le.nn.module import Module
+from che3le.nn.linear import Linear
+from che3le.nn.optimizer import SGD
+from che3le.nn.loss import CrossEntropyLoss
+from che3le.nn.activation import ReLU, Softmax
 
-from ann.extensions.dataset import MNIST
-from ann.extensions.dataloader import DataLoader
-from ann.extensions.transforms import Compose, ToTensor, Standardize
+from che3le.extensions.dataset import MNIST
+from che3le.extensions.dataloader import DataLoader
+from che3le.extensions.transforms import Compose, ToTensor, Standardize
 
 import numpy as np
 import matplotlib.pyplot as plt

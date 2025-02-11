@@ -11,7 +11,7 @@ with open("docs/readme.md", "r", encoding="utf-8") as readme_file:
     long_description = readme_file.read()
 
 setup(
-    name="ann",
+    name="che3le",
     version=version,
     description='Learning OOP the Hard Way: Modeling and Implementing a Deep Learning Library',
     long_description=long_description,

@@ -34,6 +34,61 @@ For to train an example model, you can run this code [`example/MNIST_model.py`](
 python example/MNIST_model.py
 ```
 
+If its set normally, a similar output will be displayed:
+```text
+>>> File downloaded successfully as 'data/MNIST/raw/t10k-labels-idx1-ubyte.gz'.
+ >>> File downloaded successfully as 'data/MNIST/raw/train-images-idx3-ubyte.gz'.
+ >>> File downloaded successfully as 'data/MNIST/raw/t10k-images-idx3-ubyte.gz'.
+ >>> File downloaded successfully as 'data/MNIST/raw/train-labels-idx1-ubyte.gz'.
+>>> applying ToTensor()...
+ :O already a tensor
+>>> applying Standardize(inplace=True)...
+>>> [ToTensor(), Standardize(inplace=True)] applied successfully <<<
+ >>> data/MNIST/raw/t10k-labels-idx1-ubyte.gz already exists <<<
+ >>> data/MNIST/raw/t10k-labels-idx1-ubyte already exists <<<
+ >>> data/MNIST/raw/train-images-idx3-ubyte.gz already exists <<<
+ >>> data/MNIST/raw/train-images-idx3-ubyte already exists <<<
+ >>> data/MNIST/raw/t10k-images-idx3-ubyte.gz already exists <<<
+ >>> data/MNIST/raw/t10k-images-idx3-ubyte already exists <<<
+ >>> data/MNIST/raw/train-labels-idx1-ubyte.gz already exists <<<
+ >>> data/MNIST/raw/train-labels-idx1-ubyte already exists <<<
+>>> applying ToTensor()...
+ :O already a tensor
+>>> applying Standardize(inplace=True)...
+>>> [ToTensor(), Standardize(inplace=True)] applied successfully <<<
+Run 1 / 10:
+Accuracy for run 1: 89.00%
+------------------
+Run 2 / 10:
+Accuracy for run 2: 92.41%
+------------------
+Run 3 / 10:
+Accuracy for run 3: 93.67%
+------------------
+Run 4 / 10:
+Accuracy for run 4: 93.84%
+------------------
+Run 5 / 10:
+Accuracy for run 5: 94.33%
+------------------
+Run 6 / 10:
+Accuracy for run 6: 94.82%
+------------------
+Run 7 / 10:
+Accuracy for run 7: 94.53%
+------------------
+Run 8 / 10:
+Accuracy for run 8: 95.16%
+------------------
+Run 9 / 10:
+Accuracy for run 9: 95.15%
+------------------
+Run 10 / 10:
+Accuracy for run 10: 95.39%
+------------------
+Average Accuracy over 10 runs: 93.83%
+``` 
+
 ## Project proposal
 Take a look at the project description proposed to the students in [2425-project-proposal.pdf](2425-project-proposal.pdf).
 

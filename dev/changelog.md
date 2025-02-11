@@ -46,4 +46,5 @@
 - made it pip installable
 - added test example for users
 - reorganized the repo structure
+- changed libname to `che3le`
 
