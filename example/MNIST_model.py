@@ -80,4 +80,10 @@ for run in range(10):
 average_accuracy = sum(accuracies) / len(accuracies)
 print(f'Average Accuracy over 10 runs: {average_accuracy:.2f}%')
 
-plt.plot(accuracies)
+plt.plot(accuracies, marker='o', linestyle='-', color='b', label='Accuracy')
+plt.title("Accuracy over 10 Runs")
+plt.xlabel("Run")
+plt.ylabel("Accuracy (%)")
+plt.grid(True)
+plt.legend()
+plt.show()

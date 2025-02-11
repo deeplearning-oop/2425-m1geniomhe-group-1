@@ -131,8 +131,9 @@ If you install the library locally, you can run the following script to train a 
 ```bash
 python example/MNIST_model.py
 ```
+Or directrly from the python notebook, which outputs are saved: [`example/MNIST_model.ipynb`](./example/MNIST_model.ipynb)
 
-You can test it as well on [Google Colab by clicking on this link]() and running the notebook.
+You can test it as well on [Google Colab by clicking on this link](https://colab.research.google.com/github/deeplearning-oop/2425-m1geniomhe-group-1/blob/main/example/MNIST_model.ipynb) and running the code cells. <a href="https://colab.research.google.com/github/deeplearning-oop/2425-m1geniomhe-group-1/blob/main/example/MNIST_model.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open Project in colab"/></a> 
 
 ## Authors
 * Joelle ASSY ([@joelleas](https://github.com/joelleas))
