@@ -31,6 +31,8 @@ import che3le
 help(che3le) # this will display a short description of the modules and classes available
 ```
 
+The name of the library is _che3le (shi‘le)_, a Lebanese Arabic word meaning "flame"
+
 
 ## Project proposal
 Take a look at the project description proposed to the students in [2425-project-proposal.pdf](2425-project-proposal.pdf).
